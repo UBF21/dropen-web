@@ -27,8 +27,11 @@ export default function VariantSelector({ variants, selectedVariantId, onSelect 
   }
 
   function pickVariant(size: string, color: string): void {
-    const target = findVariant(size, color) ?? variants.find((v) => v.size === size || v.color === color)
-    if (target) onSelect(target.id)
+    const exact = findVariant(size, color)
+    if (exact) { onSelect(exact.id); return }
+    // Si no hay combinación exacta, buscar primera variante con esa talla con stock
+    const fallback = variants.find((v) => v.size === size && v.stock > 0)
+    if (fallback) onSelect(fallback.id)
   }
 
   return (

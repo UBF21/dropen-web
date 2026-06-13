@@ -9,7 +9,7 @@ export function useCart() {
   function addProductVariant(product: Product, variant: ProductVariant, quantity = 1) {
     const primaryImageUrl =
       product.images?.find((i) => i.is_primary)?.url ??
-      product.images?.sort((a, b) => a.order - b.order)[0]?.url ??
+      [...(product.images ?? [])].sort((a, b) => a.order - b.order)[0]?.url ??
       ''
 
     addItem({
