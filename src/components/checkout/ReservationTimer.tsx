@@ -21,14 +21,15 @@ export default function ReservationTimer({ expiresAt, onExpire }: Props) {
   )
 
   useEffect(() => {
-    if (remaining <= 0) { onExpire?.(); return }
+    const ms0 = Math.max(0, new Date(expiresAt).getTime() - Date.now())
+    if (ms0 === 0) { onExpire?.(); return }
     const id = setInterval(() => {
       const ms = Math.max(0, new Date(expiresAt).getTime() - Date.now())
       setRemaining(ms)
       if (ms === 0) { clearInterval(id); onExpire?.() }
     }, 1000)
     return () => clearInterval(id)
-  }, [expiresAt, onExpire, remaining])
+  }, [expiresAt, onExpire])
 
   return (
     <div className="flex items-center gap-2 bg-surface border border-border px-3 py-2 text-sm">

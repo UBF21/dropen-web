@@ -8,7 +8,7 @@ import { useCartStore, useCartTotal } from '@/store/cart.store'
 import { useReservationStore } from '@/store/reservation.store'
 import type { CartItem, WhatsAppLine } from '@/types'
 
-const WA_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER as string
+const WA_NUMBER: string = import.meta.env.VITE_WHATSAPP_NUMBER ?? ''
 
 function cartItemToWhatsAppLine(item: CartItem): WhatsAppLine {
   return {
