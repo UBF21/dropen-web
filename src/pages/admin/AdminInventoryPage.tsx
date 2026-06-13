@@ -3,13 +3,15 @@ import { PackagePlus, PackageMinus, RefreshCw, AlertCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
+import type { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { DataTable } from '@/components/ui/data-table'
 import BarcodeScanner, { type ScanMode } from '@/components/admin/inventory/BarcodeScanner'
 import BarcodeDisplay from '@/components/admin/inventory/BarcodeDisplay'
-import { useInventory, type ScannedVariant, type MovementType } from '@/hooks/useInventory'
+import { useInventory, type InventoryMovement, type ScannedVariant, type MovementType } from '@/hooks/useInventory'
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// ─── Constants ─────────────────────────────────────────────────────────────────
 
 const TOAST_NOT_FOUND_DURATION_MS = 3000
 const TOAST_SUCCESS_DURATION_MS = 2500
@@ -18,6 +20,67 @@ const MOVEMENT_LABELS: Record<MovementType, { short: string; long: string }> = {
   in: { short: '▲ ENT', long: '▲ Entrada' },
   out: { short: '▼ SAL', long: '▼ Salida' },
 }
+
+// ─── movementColumns — defined outside component (stable, no closure deps) ────
+
+const movementColumns: ColumnDef<InventoryMovement>[] = [
+  {
+    accessorKey: 'type',
+    header: 'Tipo',
+    cell: ({ row }) => {
+      const { short } = MOVEMENT_LABELS[row.original.type]
+      return (
+        <Badge
+          variant="outline"
+          className={
+            row.original.type === 'in'
+              ? 'border-green-500/40 text-green-400 bg-green-500/10 tabular-nums'
+              : 'border-red-500/40 text-red-400 bg-red-500/10 tabular-nums'
+          }
+        >
+          {short}
+        </Badge>
+      )
+    },
+    filterFn: (row, _id, value) => !value || row.original.type === value,
+  },
+  {
+    id: 'product',
+    header: 'Producto',
+    accessorFn: row => row.variant?.product?.name ?? '—',
+    cell: ({ row }) => {
+      const v = row.original.variant
+      return (
+        <div>
+          <p className="text-sm text-text-primary">{v?.product?.name ?? '—'}</p>
+          <p className="text-xs text-text-muted">{v?.size} / {v?.color}</p>
+        </div>
+      )
+    },
+  },
+  {
+    id: 'sku',
+    header: 'SKU',
+    accessorFn: row => row.variant?.sku ?? '',
+    cell: ({ row }) => (
+      <span className="text-xs font-mono text-text-muted">{row.original.variant?.sku}</span>
+    ),
+  },
+  {
+    accessorKey: 'created_at',
+    header: 'Fecha',
+    cell: ({ row }) =>
+      format(new Date(row.original.created_at), 'dd MMM · HH:mm', { locale: es }),
+  },
+  {
+    id: 'stock',
+    header: 'Stock',
+    accessorFn: row => row.variant?.stock ?? 0,
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums text-sm">{row.original.variant?.stock ?? '?'}</span>
+    ),
+  },
+]
 
 // ─── useScanHandler — extrae lógica de scan de la página (SRP) ───────────────
 
@@ -77,7 +140,7 @@ function useScanHandler({
   return { processing, lastScanned, handleScan }
 }
 
-// ─── MovementToggle ───────────────────────────────────────────────────────────
+// ─── MovementToggle ─────────────────────────────────────────────────────────────────
 
 interface MovementToggleProps {
   value: MovementType
@@ -128,7 +191,7 @@ function MovementToggle({ value, onChange, disabled }: MovementToggleProps) {
   )
 }
 
-// ─── LastScannedCard ──────────────────────────────────────────────────────────
+// ─── LastScannedCard ───────────────────────────────────────────────────────────
 
 interface LastScannedCardProps {
   variant: ScannedVariant | null
@@ -178,57 +241,10 @@ function LastScannedCard({ variant }: LastScannedCardProps) {
   )
 }
 
-// ─── MovementRow ──────────────────────────────────────────────────────────────
-
-interface MovementRowProps {
-  movement: ReturnType<typeof useInventory>['movements'][number]
-}
-
-function MovementRow({ movement: m }: MovementRowProps) {
-  const v = m.variant
-  const { short } = MOVEMENT_LABELS[m.type]
-
-  return (
-    <div className="px-4 py-3 flex items-center gap-3">
-      <Badge
-        variant="outline"
-        className={
-          m.type === 'in'
-            ? 'border-green-500/40 text-green-400 bg-green-500/10 shrink-0 tabular-nums'
-            : 'border-red-500/40 text-red-400 bg-red-500/10 shrink-0 tabular-nums'
-        }
-        aria-label={m.type === 'in' ? 'Entrada' : 'Salida'}
-      >
-        {short}
-      </Badge>
-
-      <div className="flex-1 min-w-0">
-        <p className="text-sm text-text-primary truncate">
-          {v?.product?.name ?? '—'}
-          <span className="text-text-muted ml-1">
-            · {v?.size} / {v?.color}
-          </span>
-        </p>
-        <p className="text-xs font-mono text-text-muted">{v?.sku}</p>
-      </div>
-
-      <div className="text-right shrink-0">
-        <p className="text-xs text-text-muted">
-          {format(new Date(m.created_at), 'dd MMM · HH:mm', { locale: es })}
-        </p>
-        <p className="text-xs text-text-muted">
-          Stock:{' '}
-          <span className="font-mono tabular-nums">{v?.stock ?? '?'}</span>
-        </p>
-      </div>
-    </div>
-  )
-}
-
-// ─── MovementsHistory ─────────────────────────────────────────────────────────
+// ─── MovementsHistory ──────────────────────────────────────────────────────────
 
 interface MovementsHistoryProps {
-  movements: ReturnType<typeof useInventory>['movements']
+  movements: InventoryMovement[]
   loading: boolean
   error: string | null
   onRefresh: () => void
@@ -256,36 +272,40 @@ function MovementsHistory({ movements, loading, error, onRefresh }: MovementsHis
         </Button>
       </div>
 
-      {/* Lista con scroll limitado en mobile */}
-      <div
-        className="divide-y divide-border max-h-[60vh] overflow-y-auto overscroll-contain"
-        role="list"
-      >
-        {loading && movements.length === 0 && (
-          <p className="px-4 py-8 text-sm text-text-muted text-center" aria-live="polite">
-            Cargando...
-          </p>
-        )}
+      {loading && movements.length === 0 && (
+        <p className="px-4 py-8 text-sm text-text-muted text-center" aria-live="polite">
+          Cargando...
+        </p>
+      )}
 
-        {!loading && error && (
-          <div className="flex items-center gap-2 px-4 py-6 text-error text-sm" role="alert">
-            <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
-            <span>{error}</span>
-          </div>
-        )}
+      {!loading && error && (
+        <div className="flex items-center gap-2 px-4 py-6 text-error text-sm" role="alert">
+          <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
+          <span>{error}</span>
+        </div>
+      )}
 
-        {!loading && !error && movements.length === 0 && (
-          <p className="px-4 py-8 text-sm text-text-muted text-center">
-            Sin movimientos registrados
-          </p>
-        )}
-
-        {movements.map(m => (
-          <div key={m.id} role="listitem">
-            <MovementRow movement={m} />
-          </div>
-        ))}
-      </div>
+      {!loading && !error && (
+        <div className="p-4">
+          <DataTable
+            columns={movementColumns}
+            data={movements}
+            searchColumn="product"
+            searchPlaceholder="Buscar producto..."
+            filterFields={[
+              {
+                id: 'type',
+                label: 'Tipo de movimiento',
+                type: 'select',
+                options: [
+                  { label: 'Entrada', value: 'in' },
+                  { label: 'Salida', value: 'out' },
+                ],
+              },
+            ]}
+          />
+        </div>
+      )}
     </section>
   )
 }
