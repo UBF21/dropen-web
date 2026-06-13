@@ -1,7 +1,7 @@
-import * as React from "react"
+﻿import * as React from "react"
 import { Dialog as SheetPrimitive } from "radix-ui"
 
-import { cn } from "src/lib/utils"
+import { cn } from "@/lib/utils"
 import { Button } from "src/components/ui/button"
 import { XIcon } from "lucide-react"
 
@@ -143,3 +143,4 @@ export {
   SheetTitle,
   SheetDescription,
 }
+
