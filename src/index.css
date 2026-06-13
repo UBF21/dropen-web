@@ -13,3 +13,14 @@
     margin: 0;
   }
 }
+
+@media print {
+  aside,
+  nav,
+  .print\:hidden {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+}

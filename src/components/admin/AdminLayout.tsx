@@ -1,12 +1,14 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, Package, Tag, Settings, LogOut } from 'lucide-react'
+import { LayoutDashboard, Package, Tag, Settings, LogOut, ScanBarcode, Barcode } from 'lucide-react'
 import { useAdmin } from '@/hooks/useAdmin'
 
 const NAV_ITEMS = [
-  { to: '/admin',           icon: LayoutDashboard, label: 'Dashboard', end: true },
-  { to: '/admin/productos', icon: Package,          label: 'Productos',  end: false },
-  { to: '/admin/drops',     icon: Tag,              label: 'Drops',      end: false },
-  { to: '/admin/ajustes',   icon: Settings,         label: 'Ajustes',    end: false },
+  { to: '/admin',              icon: LayoutDashboard, label: 'Dashboard',  end: true },
+  { to: '/admin/productos',    icon: Package,          label: 'Productos',  end: false },
+  { to: '/admin/drops',        icon: Tag,              label: 'Drops',      end: false },
+  { to: '/admin/inventario',   icon: ScanBarcode,      label: 'Inventario', end: false },
+  { to: '/admin/inventario/etiquetas', icon: Barcode, label: 'Etiquetas', end: false },
+  { to: '/admin/ajustes',      icon: Settings,         label: 'Ajustes',    end: false },
 ]
 
 export default function AdminLayout() {

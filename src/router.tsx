@@ -33,6 +33,8 @@ const AdminProductsPage     = lazy(() => import('@/pages/admin/AdminProductsPage
 const AdminDropsPage        = lazy(() => import('@/pages/admin/AdminDropsPage'))
 const AdminSettingsPage     = lazy(() => import('@/pages/admin/AdminSettingsPage'))
 const AdminReservationsPage = lazy(() => import('@/pages/admin/AdminReservationsPage'))
+const AdminInventoryPage    = lazy(() => import('@/pages/admin/AdminInventoryPage'))
+const AdminBarcodePrintPage = lazy(() => import('@/pages/admin/AdminBarcodePrintPage'))
 
 export const router = createBrowserRouter([
   {
@@ -60,6 +62,8 @@ export const router = createBrowserRouter([
       { path: 'drops',         element: withSuspense(AdminDropsPage) },
       { path: 'ajustes',       element: withSuspense(AdminSettingsPage) },
       { path: 'reservaciones', element: withSuspense(AdminReservationsPage) },
+      { path: 'inventario',    element: withSuspense(AdminInventoryPage) },
+      { path: 'inventario/etiquetas', element: withSuspense(AdminBarcodePrintPage) },
     ],
   },
 ])
