@@ -64,8 +64,9 @@ export function useProductsByCollection(collectionId: string) {
       .eq('collection_id', collectionId)
       .eq('active', true)
       .order('created_at', { ascending: false })
-      .then(({ data }) => {
-        setProducts((data ?? []) as Product[])
+      .then(({ data, error: err }) => {
+        if (err) console.error('useProductsByCollection:', err.message)
+        setProducts((data as Product[]) ?? [])
         setLoading(false)
       })
   }, [collectionId])
@@ -84,8 +85,9 @@ export function useAllProducts() {
       .select(PRODUCT_FIELDS)
       .eq('active', true)
       .order('created_at', { ascending: false })
-      .then(({ data }) => {
-        setProducts((data ?? []) as Product[])
+      .then(({ data, error: err }) => {
+        if (err) console.error('useAllProducts:', err.message)
+        setProducts((data as Product[]) ?? [])
         setLoading(false)
       })
   }, [])
@@ -107,6 +109,9 @@ export function useProduct(slug: string) {
       .single()
       .then(({ data, error: err }) => {
         if (err) setError(err.message)
+        // Supabase join con PRODUCT_WITH_COLLECTION retorna `collection` como objeto anidado.
+        // El tipo inferido es incompatible con Product local; cast seguro dado que la query
+        // es idéntica a la definición de PRODUCT_WITH_COLLECTION.
         else setProduct(data as unknown as Product)
         setLoading(false)
       })

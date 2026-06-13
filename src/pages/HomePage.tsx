@@ -1,10 +1,4 @@
-import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
-import {
-  COLLECTION_FIELDS,
-  PRODUCT_FIELDS,
-} from '@/lib/query-fields'
-import type { Collection, Product } from '@/types'
+import { useCollections, useAllProducts } from '@/hooks/useProducts'
 import HeroParallax from '@/components/home/HeroParallax'
 import DropsGrid from '@/components/home/DropsGrid'
 import BrandStatement from '@/components/home/BrandStatement'
@@ -12,31 +6,10 @@ import { Skeleton } from '@/components/ui/skeleton'
 import ProductCard from '@/components/product/ProductCard'
 
 export default function HomePage() {
-  const [collections, setCollections] = useState<Collection[]>([])
-  const [featured, setFeatured] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    async function load() {
-      const [colRes, prodRes] = await Promise.all([
-        supabase
-          .from('collections')
-          .select(COLLECTION_FIELDS)
-          .eq('active', true)
-          .order('created_at', { ascending: false }),
-        supabase
-          .from('products')
-          .select(PRODUCT_FIELDS)
-          .eq('active', true)
-          .order('created_at', { ascending: false })
-          .limit(6),
-      ])
-      if (colRes.data) setCollections(colRes.data as Collection[])
-      if (prodRes.data) setFeatured(prodRes.data as Product[])
-      setLoading(false)
-    }
-    load()
-  }, [])
+  const { collections, loading: loadingCollections } = useCollections()
+  const { products, loading: loadingProducts } = useAllProducts()
+  const featured = products.slice(0, 4)
+  const loading = loadingCollections || loadingProducts
 
   return (
     <>
