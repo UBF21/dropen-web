@@ -13,6 +13,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import VariantsEditor, { type VariantDraft } from './VariantsEditor'
+import ImageUploader from './ImageUploader'
 import type { Product, Collection } from '@/types'
 
 const DEFAULT_CURRENCY = 'PEN'
@@ -79,6 +80,19 @@ export default function ProductFormDialog({ open, product, collections, onClose,
       setVariants([])
     }
   }, [product, form])
+
+  async function handleImageUploaded(url: string, storagePath: string) {
+    if (!product) return
+    await supabase.from('product_images').insert({
+      product_id: product.id,
+      url,
+      storage_path: storagePath,
+      order: 0,
+      is_primary: (product.images?.length ?? 0) === 0,
+    })
+    toast.success('Imagen agregada')
+    onSaved()
+  }
 
   async function handleSave(data: FormData) {
     setSaving(true)
@@ -235,6 +249,12 @@ export default function ProductFormDialog({ open, product, collections, onClose,
                 </FormItem>
               )}
             />
+            {isEdit && product && (
+              <div>
+                <p className="text-xs text-text-muted uppercase tracking-wider mb-3">Imágenes</p>
+                <ImageUploader productId={product.id} onUploaded={handleImageUploaded} />
+              </div>
+            )}
             <div>
               <p className="text-xs text-text-muted uppercase tracking-wider mb-3">Variantes</p>
               <VariantsEditor variants={variants} onChange={setVariants} />
