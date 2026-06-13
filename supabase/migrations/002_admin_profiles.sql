@@ -1,3 +1,28 @@
+-- Funciones helper para RLS (requieren admin_profiles, se definen antes de usarse en policies)
+CREATE OR REPLACE FUNCTION is_authenticated_admin()
+RETURNS boolean LANGUAGE sql SECURITY DEFINER STABLE AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM admin_profiles
+    WHERE id = auth.uid() AND active = true
+  )
+$$;
+
+CREATE OR REPLACE FUNCTION is_admin()
+RETURNS boolean LANGUAGE sql SECURITY DEFINER STABLE AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM admin_profiles
+    WHERE id = auth.uid() AND active = true AND role = 'admin'
+  )
+$$;
+
+CREATE OR REPLACE FUNCTION is_admin_or_editor()
+RETURNS boolean LANGUAGE sql SECURITY DEFINER STABLE AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM admin_profiles
+    WHERE id = auth.uid() AND active = true AND role IN ('admin','editor')
+  )
+$$;
+
 CREATE TABLE admin_profiles (
   id         uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   email      text NOT NULL,
@@ -32,3 +57,16 @@ $$;
 CREATE TRIGGER admin_profiles_updated_at
   BEFORE UPDATE ON admin_profiles
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+-- Función para liberar stock de reservas vencidas (requiere is_authenticated_admin)
+CREATE OR REPLACE FUNCTION release_reservation_stock(p_variant_id uuid, p_quantity integer)
+RETURNS void LANGUAGE plpgsql SECURITY DEFINER AS $$
+BEGIN
+  IF NOT is_authenticated_admin() THEN
+    RAISE EXCEPTION 'Acceso denegado';
+  END IF;
+  UPDATE product_variants
+  SET stock = stock + p_quantity
+  WHERE id = p_variant_id;
+END;
+$$;

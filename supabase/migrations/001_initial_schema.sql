@@ -40,7 +40,7 @@ CREATE TABLE product_variants (
   product_id uuid NOT NULL REFERENCES products(id) ON DELETE CASCADE,
   size       text NOT NULL,
   color      text NOT NULL,
-  stock      integer NOT NULL DEFAULT 0,
+  stock      integer NOT NULL DEFAULT 0 CHECK (stock >= 0),
   sku        text UNIQUE NOT NULL,
   UNIQUE(product_id, size, color)
 );
@@ -48,7 +48,7 @@ CREATE TABLE product_variants (
 -- Reservas WhatsApp
 CREATE TABLE reservations (
   id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  variant_id  uuid NOT NULL REFERENCES product_variants(id),
+  variant_id  uuid NOT NULL REFERENCES product_variants(id) ON DELETE RESTRICT,
   quantity    integer NOT NULL,
   status      text NOT NULL DEFAULT 'pending'
               CHECK (status IN ('pending','confirmed','expired')),
@@ -88,31 +88,6 @@ CREATE TABLE wholesale_orders (
   created_at        timestamptz NOT NULL DEFAULT now()
 );
 
--- Función helper para evitar recursión en RLS
-CREATE OR REPLACE FUNCTION is_authenticated_admin()
-RETURNS boolean LANGUAGE sql SECURITY DEFINER STABLE AS $$
-  SELECT EXISTS (
-    SELECT 1 FROM admin_profiles
-    WHERE id = auth.uid() AND active = true
-  )
-$$;
-
-CREATE OR REPLACE FUNCTION is_admin()
-RETURNS boolean LANGUAGE sql SECURITY DEFINER STABLE AS $$
-  SELECT EXISTS (
-    SELECT 1 FROM admin_profiles
-    WHERE id = auth.uid() AND active = true AND role = 'admin'
-  )
-$$;
-
-CREATE OR REPLACE FUNCTION is_admin_or_editor()
-RETURNS boolean LANGUAGE sql SECURITY DEFINER STABLE AS $$
-  SELECT EXISTS (
-    SELECT 1 FROM admin_profiles
-    WHERE id = auth.uid() AND active = true AND role IN ('admin','editor')
-  )
-$$;
-
 -- RLS en todas las tablas
 ALTER TABLE collections ENABLE ROW LEVEL SECURITY;
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
@@ -142,18 +117,12 @@ CREATE POLICY "admin_read_wholesale"   ON wholesale_orders FOR SELECT USING (is_
 CREATE POLICY "admin_update_wholesale" ON wholesale_orders FOR UPDATE USING (is_authenticated_admin());
 
 -- Admins — colecciones y productos (CRUD)
-CREATE POLICY "admin_all_collections"     ON collections      FOR ALL USING (is_admin_or_editor());
-CREATE POLICY "admin_all_products"        ON products         FOR ALL USING (is_admin_or_editor());
-CREATE POLICY "admin_all_product_images"  ON product_images   FOR ALL USING (is_admin_or_editor());
-CREATE POLICY "admin_all_variants"        ON product_variants FOR ALL USING (is_admin_or_editor());
+CREATE POLICY "admin_all_collections"     ON collections      FOR ALL USING (is_admin_or_editor()) WITH CHECK (is_admin_or_editor());
+CREATE POLICY "admin_all_products"        ON products         FOR ALL USING (is_admin_or_editor()) WITH CHECK (is_admin_or_editor());
+CREATE POLICY "admin_all_product_images"  ON product_images   FOR ALL USING (is_admin_or_editor()) WITH CHECK (is_admin_or_editor());
+CREATE POLICY "admin_all_variants"        ON product_variants FOR ALL USING (is_admin_or_editor()) WITH CHECK (is_admin_or_editor());
 
 -- Admins — configuración
 CREATE POLICY "admin_update_settings" ON site_settings FOR UPDATE USING (is_admin());
+CREATE POLICY "admin_insert_settings" ON site_settings FOR INSERT WITH CHECK (is_admin());
 
--- Función para liberar stock de reservas vencidas
-CREATE OR REPLACE FUNCTION release_reservation_stock(p_variant_id uuid, p_quantity integer)
-RETURNS void LANGUAGE sql SECURITY DEFINER AS $$
-  UPDATE product_variants
-  SET stock = stock + p_quantity
-  WHERE id = p_variant_id;
-$$;
