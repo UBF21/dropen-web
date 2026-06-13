@@ -39,7 +39,12 @@ export default function AdminSettingsPage() {
     setSaving(true)
     const entries = Object.entries(settings).map(([key, value]) => ({ key, value }))
     for (const entry of entries) {
-      await supabase.from('site_settings').upsert(entry, { onConflict: 'key' })
+      const { error } = await supabase.from('site_settings').upsert(entry, { onConflict: 'key' })
+      if (error) {
+        toast.error(`Error al guardar "${entry.key}"`)
+        setSaving(false)
+        return
+      }
     }
     toast.success('Ajustes guardados')
     setSaving(false)

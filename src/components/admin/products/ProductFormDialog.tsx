@@ -83,13 +83,17 @@ export default function ProductFormDialog({ open, product, collections, onClose,
 
   async function handleImageUploaded(url: string, storagePath: string) {
     if (!product) return
-    await supabase.from('product_images').insert({
+    const { error } = await supabase.from('product_images').insert({
       product_id: product.id,
       url,
       storage_path: storagePath,
       order: 0,
       is_primary: (product.images?.length ?? 0) === 0,
     })
+    if (error) {
+      toast.error('Error al registrar imagen')
+      return
+    }
     toast.success('Imagen agregada')
     onSaved()
   }
