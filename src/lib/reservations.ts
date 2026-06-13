@@ -15,6 +15,10 @@ export async function createReservations(
   const expiresAt = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()
   const reservationIds: string[] = []
 
+  if (items.length === 0) {
+    return { success: false, reservationIds: [], expiresAt: '', reference: '', error: 'El carrito está vacío' }
+  }
+
   try {
     for (const item of items) {
       const { data, error } = await supabase
