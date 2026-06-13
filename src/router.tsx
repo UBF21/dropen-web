@@ -1,6 +1,8 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 import Layout from '@/components/layout/Layout'
+import AdminGuard from '@/components/admin/AdminGuard'
+import AdminLayout from '@/components/admin/AdminLayout'
 
 function Loading() {
   return (
@@ -51,6 +53,7 @@ export const router = createBrowserRouter([
   },
   {
     path: '/admin',
+    element: <AdminGuard><AdminLayout /></AdminGuard>,
     children: [
       { index: true,           element: withSuspense(AdminDashboardPage) },
       { path: 'productos',     element: withSuspense(AdminProductsPage) },
