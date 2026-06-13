@@ -52,6 +52,7 @@ export function useAdmin(): UseAdminResult {
       } else {
         if (mounted) setProfile(null)
       }
+      if (mounted) setLoading(false)
     })
     return () => { mounted = false; subscription.unsubscribe() }
   }, [])

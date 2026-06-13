@@ -18,6 +18,7 @@ export default function AdminDashboardPage() {
   })
 
   useEffect(() => {
+    let mounted = true
     Promise.all([
       supabase.from('reservations').select(RESERVATION_FIELDS, { count: 'exact', head: true })
         .eq('status', 'pending'),
@@ -26,6 +27,7 @@ export default function AdminDashboardPage() {
       supabase.from('wholesale_orders').select('id', { count: 'exact', head: true })
         .eq('status', 'pending'),
     ]).then(([res, prod, col, ws]) => {
+      if (!mounted) return
       setStats({
         activeReservations: res.count ?? 0,
         totalProducts: prod.count ?? 0,
@@ -33,6 +35,7 @@ export default function AdminDashboardPage() {
         pendingWholesale: ws.count ?? 0,
       })
     })
+    return () => { mounted = false }
   }, [])
 
   const cards = [
