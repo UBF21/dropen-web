@@ -9,6 +9,7 @@ import ProductGallery from '@/components/product/ProductGallery'
 import VariantSelector from '@/components/product/VariantSelector'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import PageMeta from '@/components/seo/PageMeta'
 
 export default function ProductPage() {
   const { slug = '' } = useParams<{ slug: string }>()
@@ -58,6 +59,12 @@ export default function ProductPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-24">
+      {product && (
+        <PageMeta
+          title={product.name}
+          description={product.description ?? undefined}
+        />
+      )}
       <Link
         to={collectionSlug ? `/colecciones/${collectionSlug}` : '/colecciones'}
         className="flex items-center gap-1 text-text-muted text-sm mb-8 hover:text-text-primary transition-colors"

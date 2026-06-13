@@ -4,6 +4,7 @@ import DropsGrid from '@/components/home/DropsGrid'
 import BrandStatement from '@/components/home/BrandStatement'
 import { Skeleton } from '@/components/ui/skeleton'
 import ProductCard from '@/components/product/ProductCard'
+import PageMeta from '@/components/seo/PageMeta'
 
 export default function HomePage() {
   const { collections, loading: loadingCollections } = useCollections()
@@ -13,6 +14,7 @@ export default function HomePage() {
 
   return (
     <>
+      <PageMeta title="DROPEN" description="Jeans baggy premium. Streetwear consciente desde Lima." />
       <HeroParallax />
       {loading ? (
         <section className="py-20 px-4 max-w-7xl mx-auto">
