@@ -2,7 +2,7 @@ export const COLLECTION_FIELDS =
   'id, name, slug, description, cover_url, active, created_at'
 
 export const PRODUCT_IMAGE_FIELDS =
-  'id, url, storage_path, alt_text, "order", is_primary, created_at'
+  'id, product_id, url, storage_path, alt_text, "order", is_primary, created_at'
 
 export const PRODUCT_VARIANT_FIELDS =
   'id, size, color, stock, sku'

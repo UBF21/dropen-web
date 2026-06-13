@@ -31,7 +31,7 @@ export default function HomePage() {
           .limit(6),
       ])
       if (colRes.data) setCollections(colRes.data as Collection[])
-      if (prodRes.data) setFeatured(prodRes.data as unknown as Product[])
+      if (prodRes.data) setFeatured(prodRes.data as Product[])
       setLoading(false)
     }
     load()
