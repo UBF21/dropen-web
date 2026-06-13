@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { useCartStore } from '../cart.store'
+import { renderHook } from '@testing-library/react'
+import { useCartStore, useCartTotal, useCartItemCount } from '../cart.store'
 import type { CartItem } from '@/types'
 
 const makeItem = (overrides: Partial<CartItem> = {}): CartItem => ({
@@ -73,8 +74,15 @@ describe('selectores', () => {
     useCartStore.setState({
       items: [makeItem({ price: 189, quantity: 2 }), makeItem({ variantId: 'v2', price: 199, quantity: 1 })],
     })
-    // Calcular el total directamente sin hooks (evita contexto React)
-    const total = useCartStore.getState().items.reduce((s, i) => s + i.price * i.quantity, 0)
-    expect(total).toBe(577) // 189*2 + 199*1
+    const { result } = renderHook(() => useCartTotal())
+    expect(result.current).toBe(577) // 189*2 + 199*1
+  })
+
+  it('useCartItemCount cuenta el total de unidades correctamente', () => {
+    useCartStore.setState({
+      items: [makeItem({ quantity: 3 }), makeItem({ variantId: 'v2', quantity: 2 })],
+    })
+    const { result } = renderHook(() => useCartItemCount())
+    expect(result.current).toBe(5)
   })
 })
