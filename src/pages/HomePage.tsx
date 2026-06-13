@@ -9,6 +9,7 @@ import HeroParallax from '@/components/home/HeroParallax'
 import DropsGrid from '@/components/home/DropsGrid'
 import BrandStatement from '@/components/home/BrandStatement'
 import { Skeleton } from '@/components/ui/skeleton'
+import ProductCard from '@/components/product/ProductCard'
 
 export default function HomePage() {
   const [collections, setCollections] = useState<Collection[]>([])
@@ -61,13 +62,8 @@ export default function HomePage() {
               ? Array.from({ length: 6 }).map((_, i) => (
                   <Skeleton key={i} className="aspect-[3/4] bg-surface" />
                 ))
-              : featured.map((p) => (
-                  <div key={p.id} className="aspect-[3/4] bg-surface border border-border flex items-end p-4">
-                    <div>
-                      <p className="text-text-primary text-sm font-medium">{p.name}</p>
-                      <p className="text-accent text-sm">S/ {p.price.toFixed(2)}</p>
-                    </div>
-                  </div>
+              : featured.map((p, i) => (
+                  <ProductCard key={p.id} product={p} index={i} />
                 ))}
           </div>
         </div>
