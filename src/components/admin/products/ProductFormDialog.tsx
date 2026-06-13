@@ -34,13 +34,17 @@ interface Props {
   onSaved: () => void
 }
 
-async function saveVariants(productId: string, variants: VariantDraft[]) {
-  await supabase.from('product_variants').delete().eq('product_id', productId)
+async function saveVariants(productId: string, variants: VariantDraft[]): Promise<boolean> {
+  const { error: deleteError } = await supabase.from('product_variants').delete().eq('product_id', productId)
+  if (deleteError) { toast.error('Error al actualizar variantes'); return false }
+
   if (variants.length > 0) {
-    await supabase
+    const { error: insertError } = await supabase
       .from('product_variants')
       .insert(variants.map((v) => ({ product_id: productId, ...v })))
+    if (insertError) { toast.error('Error al insertar variantes'); return false }
   }
+  return true
 }
 
 export default function ProductFormDialog({ open, product, collections, onClose, onSaved }: Props) {
@@ -80,7 +84,7 @@ export default function ProductFormDialog({ open, product, collections, onClose,
     setSaving(true)
     try {
       if (isEdit && product) {
-        await supabase
+        const { error: updateError } = await supabase
           .from('products')
           .update({
             name: data.name,
@@ -90,7 +94,9 @@ export default function ProductFormDialog({ open, product, collections, onClose,
             description: data.description ?? null,
           })
           .eq('id', product.id)
-        await saveVariants(product.id, variants)
+        if (updateError) { toast.error('Error al actualizar producto'); return }
+        const variantsSaved = await saveVariants(product.id, variants)
+        if (!variantsSaved) return
         toast.success('Producto actualizado')
         onSaved()
         onClose()

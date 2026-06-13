@@ -21,13 +21,15 @@ export default function AdminProductsPage() {
 
   async function handleDelete(productId: string) {
     if (!confirm('¿Eliminar este producto?')) return
-    await supabase.from('products').delete().eq('id', productId)
+    const { error } = await supabase.from('products').delete().eq('id', productId)
+    if (error) { toast.error('Error al eliminar'); return }
     toast.success('Producto eliminado')
     forceRefresh((n) => n + 1)
   }
 
   async function handleToggleActive(productId: string, active: boolean) {
-    await supabase.from('products').update({ active }).eq('id', productId)
+    const { error } = await supabase.from('products').update({ active }).eq('id', productId)
+    if (error) { toast.error('Error al actualizar'); return }
     forceRefresh((n) => n + 1)
   }
 
