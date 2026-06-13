@@ -37,6 +37,7 @@ async function saveOrder(data: Step1Data, items: WholesaleOrderItem[], totalUnit
     items,
     total_units: totalUnits,
   })
+  if (error) console.error('saveOrder failed:', error.message)
   return !error
 }
 
@@ -79,6 +80,12 @@ export default function WholesaleForm({ minUnits, maxUnits }: Props) {
     const ok = await saveOrder(step1Data, lotItems, totalUnits)
     if (!ok) { toast.error('Error al enviar. Intentá de nuevo.'); setSubmitting(false); return }
     const msg = buildWholesaleWaMessage(step1Data, lotItems, totalUnits)
+    if (!WA_NUMBER) {
+      console.error('VITE_WHATSAPP_NUMBER no está configurado')
+      toast.error('Error de configuración. Contactanos directamente.')
+      setSubmitting(false)
+      return
+    }
     window.open(buildWhatsAppUrl(WA_NUMBER, msg), '_blank', 'noopener,noreferrer')
     setStep(3)
     setSubmitting(false)

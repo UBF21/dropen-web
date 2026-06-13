@@ -13,8 +13,14 @@ export default function WholesalePage() {
       .in('key', ['wholesale_min_units', 'wholesale_max_units'])
       .then(({ data }) => {
         data?.forEach(({ key, value }) => {
-          if (key === 'wholesale_min_units') setMinUnits(parseInt(value))
-          if (key === 'wholesale_max_units') setMaxUnits(parseInt(value))
+          if (key === 'wholesale_min_units') {
+            const n = parseInt(value)
+            if (!isNaN(n)) setMinUnits(n)
+          }
+          if (key === 'wholesale_max_units') {
+            const n = parseInt(value)
+            if (!isNaN(n)) setMaxUnits(n)
+          }
         })
       })
   }, [])
