@@ -17,6 +17,7 @@ export function useCollections() {
       .from('collections')
       .select(COLLECTION_FIELDS)
       .eq('active', true)
+      .is('deleted_at', null)
       .order('created_at', { ascending: false })
       .then(({ data, error: err }) => {
         if (err) setError(err.message)
@@ -39,6 +40,7 @@ export function useCollection(slug: string) {
       .from('collections')
       .select(COLLECTION_FIELDS)
       .eq('slug', slug)
+      .is('deleted_at', null)
       .single()
       .then(({ data, error: err }) => {
         if (err) setError(err.message)
@@ -63,6 +65,7 @@ export function useProductsByCollection(collectionId: string) {
       .select(PRODUCT_FIELDS)
       .eq('collection_id', collectionId)
       .eq('active', true)
+      .is('deleted_at', null)
       .order('created_at', { ascending: false })
       .then(({ data, error: err }) => {
         if (err) console.error('useProductsByCollection:', err.message)
@@ -84,6 +87,7 @@ export function useAllProducts() {
       .from('products')
       .select(PRODUCT_FIELDS)
       .eq('active', true)
+      .is('deleted_at', null)
       .order('created_at', { ascending: false })
       .then(({ data, error: err }) => {
         if (err) console.error('useAllProducts:', err.message)
@@ -106,6 +110,7 @@ export function useProduct(slug: string) {
       .from('products')
       .select(PRODUCT_WITH_COLLECTION)
       .eq('slug', slug)
+      .is('deleted_at', null)
       .single()
       .then(({ data, error: err }) => {
         if (err) setError(err.message)
