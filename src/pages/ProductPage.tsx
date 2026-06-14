@@ -10,6 +10,7 @@ import VariantSelector from '@/components/product/VariantSelector'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import PageMeta from '@/components/seo/PageMeta'
+import { formatCurrency } from '@/lib/currency'
 
 export default function ProductPage() {
   const { slug = '' } = useParams<{ slug: string }>()
@@ -34,11 +35,28 @@ export default function ProductPage() {
   if (loading) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-24 grid grid-cols-1 md:grid-cols-2 gap-12">
-        <Skeleton className="aspect-[3/4] bg-surface" />
-        <div className="space-y-4">
-          <Skeleton className="h-8 w-48 bg-surface" />
-          <Skeleton className="h-6 w-32 bg-surface" />
-          <Skeleton className="h-40 w-full bg-surface" />
+        {/* Columna izquierda: galería */}
+        <div className="flex flex-col gap-3">
+          <Skeleton className="aspect-[3/4] w-full bg-surface" />
+          <div className="flex gap-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="w-16 h-20 bg-surface flex-shrink-0" />
+            ))}
+          </div>
+        </div>
+        {/* Columna derecha: título / precio / variantes / CTA */}
+        <div className="space-y-8">
+          <div className="space-y-3">
+            <Skeleton className="h-4 w-24 bg-surface" />
+            <Skeleton className="h-10 w-3/4 bg-surface" />
+            <Skeleton className="h-7 w-32 bg-surface" />
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="w-12 h-12 bg-surface" />
+            ))}
+          </div>
+          <Skeleton className="h-14 w-full bg-surface" />
         </div>
       </div>
     )
@@ -85,7 +103,7 @@ export default function ProductPage() {
               {product.name}
             </h1>
             <p className="mt-3 text-2xl text-accent font-medium">
-              S/ {product.price.toFixed(2)}
+              {formatCurrency(product.price, product.moneda_code)}
             </p>
           </div>
 
