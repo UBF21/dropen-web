@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase'
 import { useCollections } from '@/hooks/useProducts'
 import { Button } from '@/components/ui/button'
 import DropsTable from '@/components/admin/drops/DropsTable'
-import DropFormDialog from '@/components/admin/drops/DropFormDialog'
+import DropFormSheet from '@/components/admin/drops/DropFormSheet'
 import type { Collection } from '@/types'
 
 export default function AdminDropsPage() {
@@ -46,7 +46,7 @@ export default function AdminDropsPage() {
         <DropsTable collections={collections} onEdit={openEdit}
           onDelete={handleDelete} onToggleActive={handleToggleActive} />
       )}
-      <DropFormDialog
+      <DropFormSheet
         open={dialogOpen} collection={editingCol}
         onClose={() => setDialogOpen(false)} onSaved={() => forceRefresh((n) => n + 1)}
       />

@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase'
 import { useAllProducts, useCollections } from '@/hooks/useProducts'
 import { Button } from '@/components/ui/button'
 import ProductsTable from '@/components/admin/products/ProductsTable'
-import ProductFormDialog from '@/components/admin/products/ProductFormDialog'
+import ProductFormSheet from '@/components/admin/products/ProductFormSheet'
 import type { Product } from '@/types'
 
 export default function AdminProductsPage() {
@@ -55,7 +55,7 @@ export default function AdminProductsPage() {
         />
       )}
 
-      <ProductFormDialog
+      <ProductFormSheet
         open={dialogOpen}
         product={editingProduct}
         collections={collections}
