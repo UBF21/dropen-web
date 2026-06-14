@@ -2,6 +2,8 @@ import { useCollections, useAllProducts } from '@/hooks/useProducts'
 import HeroParallax from '@/components/home/HeroParallax'
 import DropsGrid from '@/components/home/DropsGrid'
 import BrandStatement from '@/components/home/BrandStatement'
+import MarqueeTicker from '@/components/home/MarqueeTicker'
+import { AnimatedSectionTitle } from '@/components/ui/animated-section-title'
 import { Skeleton } from '@/components/ui/skeleton'
 import ProductCard from '@/components/product/ProductCard'
 import PageMeta from '@/components/seo/PageMeta'
@@ -16,6 +18,7 @@ export default function HomePage() {
     <>
       <PageMeta title="DROPEN" description="Jeans baggy premium. Streetwear consciente desde Lima." />
       <HeroParallax />
+      <MarqueeTicker />
       {loading ? (
         <section className="py-20 px-4 max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -29,9 +32,9 @@ export default function HomePage() {
       )}
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
-          <h2 className="font-display font-bold text-3xl tracking-widest text-text-primary mb-12 uppercase">
+          <AnimatedSectionTitle className="font-display font-bold text-3xl tracking-widest text-text-primary mb-12 uppercase">
             Destacados
-          </h2>
+          </AnimatedSectionTitle>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {loading
               ? Array.from({ length: 6 }).map((_, i) => (
