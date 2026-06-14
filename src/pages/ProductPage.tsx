@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { toast } from 'sonner'
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeft, ShoppingBag } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useProduct } from '@/hooks/useProducts'
 import { useCart } from '@/hooks/useCart'
 import { useUIStore } from '@/store/ui.store'
@@ -18,6 +19,20 @@ export default function ProductPage() {
   const { addProductVariant } = useCart()
   const openCart = useUIStore((s) => s.openCart)
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null)
+
+  const ctaRef = useRef<HTMLDivElement>(null)
+  const [isCtaVisible, setIsCtaVisible] = useState(true)
+
+  useEffect(() => {
+    const el = ctaRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsCtaVisible(entry.isIntersecting),
+      { threshold: 0.1 },
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [product])
 
   const selectedVariant = product?.variants?.find((v) => v.id === selectedVariantId)
   const outOfStock = selectedVariant ? selectedVariant.stock === 0 : false
@@ -119,19 +134,37 @@ export default function ProductPage() {
             />
           )}
 
-          <Button
-            onClick={handleAddToCart}
-            disabled={!selectedVariantId || outOfStock}
-            className="w-full bg-accent hover:bg-accent-hover text-background py-4 text-xs tracking-[0.2em] uppercase rounded-none disabled:opacity-50"
-          >
-            {outOfStock
-              ? 'Agotado'
-              : !selectedVariantId
-              ? 'Seleccioná talla y color'
-              : 'Agregar al carrito'}
-          </Button>
+          <div ref={ctaRef}>
+            <Button
+              onClick={handleAddToCart}
+              disabled={!selectedVariantId || outOfStock}
+              className="w-full bg-accent hover:bg-accent-hover text-background py-4 text-xs tracking-[0.2em] uppercase rounded-none disabled:opacity-50"
+            >
+              {outOfStock
+                ? 'Agotado'
+                : !selectedVariantId
+                ? 'Seleccioná talla y color'
+                : 'Agregar al carrito'}
+            </Button>
+          </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {!isCtaVisible && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => ctaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+            aria-label="Ir a agregar al carrito"
+            className="md:hidden fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-accent text-background flex items-center justify-center shadow-lg"
+          >
+            <ShoppingBag className="w-6 h-6" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
