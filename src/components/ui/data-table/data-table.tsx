@@ -11,6 +11,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import {
   Table,
   TableBody,
@@ -63,7 +64,7 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div className="space-y-3">
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="space-y-3">
       <DataTableToolbar
         table={table}
         searchColumn={searchColumn}
@@ -105,6 +106,6 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
       <DataTablePagination table={table} />
-    </div>
+    </motion.div>
   )
 }
