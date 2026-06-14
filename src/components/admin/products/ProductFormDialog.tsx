@@ -35,6 +35,7 @@ interface Props {
 }
 
 async function saveVariants(productId: string, variants: VariantDraft[]): Promise<boolean> {
+  // NO convertir a soft delete: patrón replace-all de variantes; soft delete colisionaría con UNIQUE constraints (ver plan soft-delete Tarea F3)
   const { error: deleteError } = await supabase.from('product_variants').delete().eq('product_id', productId)
   if (deleteError) { toast.error('Error al actualizar variantes'); return false }
 
