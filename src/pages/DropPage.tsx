@@ -11,6 +11,21 @@ export default function DropPage() {
   const { products, loading: prodLoading } = useProductsByCollection(collectionId)
   const loading = colLoading || (!!collectionId && prodLoading)
 
+  if (loading) {
+    return (
+      <div className="min-h-screen">
+        <Skeleton className="h-64 md:h-96 w-full bg-surface rounded-none" />
+        <div className="max-w-7xl mx-auto px-4 py-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="aspect-[3/4] bg-surface" />
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen">
       <div className="relative h-64 md:h-96 bg-surface overflow-hidden">
@@ -31,19 +46,13 @@ export default function DropPage() {
             Colecciones
           </Link>
           <h1 className="font-display font-bold text-4xl md:text-5xl text-text-primary">
-            {colLoading ? '...' : (collection?.name ?? 'Drop')}
+            {collection?.name ?? 'Drop'}
           </h1>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-16">
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="aspect-[3/4] bg-surface" />
-            ))}
-          </div>
-        ) : products.length === 0 ? (
+        {products.length === 0 ? (
           <p className="text-text-muted text-center py-20">
             No hay productos en esta colección.
           </p>
