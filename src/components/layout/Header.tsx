@@ -1,6 +1,7 @@
 import { Link, NavLink } from 'react-router-dom'
 import { ShoppingBag, Menu, X } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { motion, useAnimate } from 'framer-motion'
 import { useCartItemCount } from '@/store/cart.store'
 import { useUIStore } from '@/store/ui.store'
 
@@ -13,6 +14,31 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const itemCount = useCartItemCount()
   const openCart = useUIStore((s) => s.openCart)
+
+  const [scope, animate] = useAnimate()
+  const prevCount = useRef<number | undefined>(undefined)
+
+  useEffect(() => {
+    const prev = prevCount.current
+    prevCount.current = itemCount
+    if (prev === undefined) return            // primer render: no animar
+    if (itemCount <= prev) return             // quitar item: no animar
+
+    // Shake del ícono (siempre presente)
+    animate(
+      'svg',
+      { rotate: [0, -15, 15, -10, 10, 0] },
+      { duration: 0.4 },
+    )
+    // Pop del badge (solo si está montado)
+    if (scope.current?.querySelector('[data-cart-badge]')) {
+      animate(
+        '[data-cart-badge]',
+        { scale: [1, 1.5, 1] },
+        { duration: 0.3 },
+      )
+    }
+  }, [itemCount, animate, scope])
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-sm border-b border-border">
@@ -41,7 +67,7 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-4">
+        <div ref={scope} className="flex items-center gap-4">
           <button
             onClick={openCart}
             aria-label="Abrir carrito"
@@ -49,9 +75,12 @@ export default function Header() {
           >
             <ShoppingBag className="w-5 h-5" />
             {itemCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-accent text-background text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+              <motion.span
+                data-cart-badge
+                className="absolute -top-1.5 -right-1.5 bg-accent text-background text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center"
+              >
                 {itemCount > 9 ? '9+' : itemCount}
-              </span>
+              </motion.span>
             )}
           </button>
 

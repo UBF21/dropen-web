@@ -1,3 +1,4 @@
+import '@/test/mocks/framer-motion'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, it, expect, vi } from 'vitest'
@@ -28,5 +29,12 @@ describe('Header', () => {
   it('muestra botón de carrito', () => {
     render(<MemoryRouter><Header /></MemoryRouter>)
     expect(screen.getByRole('button', { name: /abrir carrito/i })).toBeInTheDocument()
+  })
+
+  it('renderiza el badge cuando hay items en el carrito', async () => {
+    const { useCartItemCount } = await import('@/store/cart.store')
+    vi.mocked(useCartItemCount).mockReturnValue(3)
+    render(<MemoryRouter><Header /></MemoryRouter>)
+    expect(screen.getByText('3')).toBeInTheDocument()
   })
 })
