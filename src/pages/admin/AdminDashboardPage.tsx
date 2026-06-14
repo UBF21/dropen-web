@@ -166,17 +166,17 @@ export default function AdminDashboardPage() {
                 <LineChart data={stats?.revenueByDay ?? []} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
                   <XAxis dataKey="date" tickFormatter={formatShortDate}
-                    tick={{ fontSize: 11, fill: 'var(--color-text-muted)' }} axisLine={false} tickLine={false} />
+                    tick={{ fontSize: 11, fill: '#888888' }} axisLine={false} tickLine={false} />
                   <YAxis
                     tickFormatter={(v: unknown) => `${currency.symbol}${((v as number) / 1000).toFixed(0)}k`}
-                    tick={{ fontSize: 11, fill: 'var(--color-text-muted)' }} axisLine={false} tickLine={false} width={48} />
+                    tick={{ fontSize: 11, fill: '#888888' }} axisLine={false} tickLine={false} width={48} />
                   <Tooltip
-                    contentStyle={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: '8px', fontSize: '12px' }}
-                    labelStyle={{ color: 'var(--color-text-muted)', fontSize: 11 }}
+                    contentStyle={{ background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: '8px', fontSize: '12px' }}
+                    labelStyle={{ color: '#888888', fontSize: 11 }}
                     formatter={(v: unknown) => [currency.format(v as number), 'Revenue'] as [string, string]}
                     labelFormatter={formatShortDate}
                   />
-                  <Line type="monotone" dataKey="revenue" stroke="var(--color-accent)"
+                  <Line type="monotone" dataKey="revenue" stroke="#C9A96E"
                     strokeWidth={2} dot={false} activeDot={{ r: 4, strokeWidth: 0 }} />
                 </LineChart>
               </ResponsiveContainer>
@@ -210,11 +210,11 @@ export default function AdminDashboardPage() {
                 <BarChart data={stats?.movementsByDay ?? []} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
                   <XAxis dataKey="date" tickFormatter={formatShortDate}
-                    tick={{ fontSize: 11, fill: 'var(--color-text-muted)' }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: 'var(--color-text-muted)' }} axisLine={false} tickLine={false} width={32} />
+                    tick={{ fontSize: 11, fill: '#888888' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: '#888888' }} axisLine={false} tickLine={false} width={32} />
                   <Tooltip
-                    contentStyle={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: '8px', fontSize: '12px' }}
-                    labelStyle={{ color: 'var(--color-text-muted)', fontSize: 11 }}
+                    contentStyle={{ background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: '8px', fontSize: '12px' }}
+                    labelStyle={{ color: '#888888', fontSize: 11 }}
                     labelFormatter={formatShortDate}
                   />
                   <Bar dataKey="in" name="Entradas" fill="#22c55e" opacity={0.8} radius={[2, 2, 0, 0]} />
