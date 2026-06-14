@@ -43,6 +43,7 @@ export function useVariants(): UseVariantsResult {
       const { data, error: err } = await supabase
         .from('product_variants')
         .select('id, sku, size, color, stock, product:products(id, name)')
+        .is('deleted_at', null)
         .order('sku')
 
       if (err) throw err

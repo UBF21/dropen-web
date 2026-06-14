@@ -146,6 +146,7 @@ export function useInventory(): UseInventoryResult {
       .from('product_variants')
       .select('id, sku, size, color, stock, product:products(id, name, price)')
       .eq('sku', sku.trim())
+      .is('deleted_at', null)
       .single()
 
     if (error || !data) return null
@@ -194,6 +195,7 @@ export function useInventory(): UseInventoryResult {
             product:products(name)
           )
         `)
+        .is('deleted_at', null)
         .order('created_at', { ascending: false })
         .limit(limit)
 
