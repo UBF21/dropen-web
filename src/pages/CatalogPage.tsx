@@ -13,7 +13,8 @@ export default function CatalogPage() {
         </h1>
       </div>
       {loading ? (
-        <section className="px-4 max-w-7xl mx-auto py-12">
+        <section className="px-4 max-w-7xl mx-auto py-12 space-y-8">
+          <Skeleton className="h-12 w-64 bg-surface" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {Array.from({ length: 4 }).map((_, i) => (
               <Skeleton key={i} className="aspect-[4/5] bg-surface" />
