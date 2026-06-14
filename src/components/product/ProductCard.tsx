@@ -2,6 +2,7 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { Badge } from '@/components/ui/badge'
 import type { Product } from '@/types'
+import { formatCurrency } from '@/lib/currency'
 
 interface Props {
   product: Product
@@ -52,6 +53,18 @@ export default function ProductCard({ product, index = 0 }: Props) {
               Sin imagen
             </div>
           )}
+          {imageUrl && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileHover={{ opacity: 1 }}
+              transition={{ duration: 0.2 }}
+              className="absolute inset-0 bg-background/50 backdrop-blur-[2px] flex items-center justify-center pointer-events-none"
+            >
+              <span className="text-text-primary text-xs tracking-[0.2em] uppercase font-medium">
+                Ver producto
+              </span>
+            </motion.div>
+          )}
           {outOfStock && (
             <div className="absolute inset-0 bg-background/60 flex items-center justify-center">
               <Badge variant="secondary">Agotado</Badge>
@@ -67,7 +80,7 @@ export default function ProductCard({ product, index = 0 }: Props) {
           <h3 className="font-body font-medium text-text-primary group-hover:text-accent transition-colors">
             {product.name}
           </h3>
-          <p className="font-body text-accent font-medium">S/ {product.price.toFixed(2)}</p>
+          <p className="font-body text-accent font-medium">{formatCurrency(product.price, product.moneda_code)}</p>
         </div>
       </Link>
     </motion.div>
