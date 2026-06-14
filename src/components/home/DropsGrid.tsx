@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { motion, useReducedMotion } from 'framer-motion'
 import type { Collection } from '@/types'
+import { AnimatedSectionTitle } from '@/components/ui/animated-section-title'
 
 interface Props {
   collections: Collection[]
@@ -14,9 +15,9 @@ export default function DropsGrid({ collections, limit }: Props) {
   return (
     <section className="py-20 px-4">
       <div className="max-w-7xl mx-auto">
-        <h2 className="font-display font-bold text-3xl tracking-widest text-text-primary mb-12 uppercase">
+        <AnimatedSectionTitle className="font-display font-bold text-3xl tracking-widest text-text-primary mb-12 uppercase">
           Drops
-        </h2>
+        </AnimatedSectionTitle>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {items.map((col, i) => (
             <motion.div
