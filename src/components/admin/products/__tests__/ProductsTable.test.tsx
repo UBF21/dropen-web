@@ -25,7 +25,7 @@ describe('ProductsTable', () => {
 
   it('muestra mensaje cuando no hay productos', () => {
     render(<ProductsTable products={[]} onEdit={vi.fn()} onDelete={vi.fn()} onToggleActive={vi.fn()} />)
-    expect(screen.getByText(/no hay productos/i)).toBeInTheDocument()
+    expect(screen.getByText(/sin resultados/i)).toBeInTheDocument()
   })
 
   it('pide confirmación antes de eliminar', async () => {
