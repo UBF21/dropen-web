@@ -12,8 +12,8 @@ export interface InventoryMovement {
   quantity: number
   notes: string | null
   created_at: string
-  updated_at: string
-  deleted_at: string | null
+  updated_at?: string
+  deleted_at?: string | null
   variant?: {
     sku: string
     size: string
@@ -53,8 +53,8 @@ interface MovementRow {
   quantity: number
   notes: string | null
   created_at: string
-  updated_at: string
-  deleted_at: string | null
+  updated_at?: string
+  deleted_at?: string | null
   variant: {
     sku: string
     size: string
@@ -106,8 +106,8 @@ function toInventoryMovement(row: MovementRow): InventoryMovement {
     quantity: row.quantity,
     notes: row.notes,
     created_at: row.created_at,
-    updated_at: row.updated_at,
-    deleted_at: row.deleted_at,
+    ...(row.updated_at && { updated_at: row.updated_at }),
+    ...(row.deleted_at !== undefined && { deleted_at: row.deleted_at }),
     variant: row.variant
       ? {
           sku: row.variant.sku,
@@ -195,7 +195,7 @@ export function useInventory(): UseInventoryResult {
       const { data, error } = await supabase
         .from('inventory_movements')
         .select(`
-          id, variant_id, type, quantity, notes, created_at,
+          id, variant_id, type, quantity, notes, created_at, updated_at, deleted_at,
           variant:product_variants(
             sku, size, color, stock,
             product:products(name)

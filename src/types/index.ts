@@ -10,6 +10,8 @@ export interface Collection {
   cover_url: string | null
   active: boolean
   created_at: string
+  updated_at?: string
+  deleted_at?: string | null
 }
 
 export interface ProductImage {
@@ -21,6 +23,8 @@ export interface ProductImage {
   order: number
   is_primary: boolean
   created_at: string
+  updated_at?: string
+  deleted_at?: string | null
 }
 
 export interface ProductVariant {
@@ -31,6 +35,9 @@ export interface ProductVariant {
   stock: number
   sku: string
   available_stock?: number
+  created_at?: string
+  updated_at?: string
+  deleted_at?: string | null
 }
 
 export interface Product {
@@ -43,6 +50,8 @@ export interface Product {
   moneda_code: string
   active: boolean
   created_at: string
+  updated_at?: string
+  deleted_at?: string | null
   collection?: Collection
   images?: ProductImage[]
   variants?: ProductVariant[]
@@ -56,12 +65,16 @@ export interface Reservation {
   expires_at: string
   customer_wa: string | null
   created_at: string
+  updated_at?: string
+  deleted_at?: string | null
 }
 
 export interface SiteSetting {
   key: string
   value: string
-  updated_at: string
+  created_at?: string
+  updated_at?: string
+  deleted_at?: string | null
 }
 
 export interface WholesaleOrderItem {
@@ -86,6 +99,8 @@ export interface WholesaleOrder {
   notes: string | null
   status: WholesaleOrderStatus
   created_at: string
+  updated_at?: string
+  deleted_at?: string | null
 }
 
 export interface AdminProfile {
@@ -95,7 +110,8 @@ export interface AdminProfile {
   role: AdminRole
   active: boolean
   created_at: string
-  updated_at: string
+  updated_at?: string
+  deleted_at?: string | null
 }
 
 export interface CartItem {
