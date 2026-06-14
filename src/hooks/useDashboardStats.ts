@@ -54,15 +54,18 @@ export function useDashboardStats(): UseDashboardStatsResult {
         supabase
           .from('inventory_movements')
           .select('type, quantity, created_at, variant:product_variants(stock, product:products(price))')
+          .is('deleted_at', null)
           .gte('created_at', from)
           .lte('created_at', to),
         supabase
           .from('product_variants')
-          .select('stock'),
+          .select('stock')
+          .is('deleted_at', null),
         supabase
           .from('products')
           .select('id', { count: 'exact', head: true })
-          .eq('active', true),
+          .eq('active', true)
+          .is('deleted_at', null),
       ])
 
       if (movementsRes.error) throw movementsRes.error
