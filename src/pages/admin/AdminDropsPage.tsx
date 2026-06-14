@@ -19,7 +19,7 @@ export default function AdminDropsPage() {
 
   async function handleDelete(colId: string) {
     if (!confirm('¿Eliminar este drop?')) return
-    const { error } = await supabase.from('collections').delete().eq('id', colId)
+    const { error } = await supabase.from('collections').update({ deleted_at: new Date().toISOString() }).eq('id', colId)
     if (error) { toast.error('Error al eliminar'); return }
     toast.success('Drop eliminado')
     forceRefresh((n) => n + 1)
