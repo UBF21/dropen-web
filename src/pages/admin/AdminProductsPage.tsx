@@ -21,8 +21,13 @@ export default function AdminProductsPage() {
 
   async function handleDelete(productId: string) {
     if (!confirm('¿Eliminar este producto?')) return
-    const { error } = await supabase.from('products').delete().eq('id', productId)
-    if (error) { toast.error('Error al eliminar'); return }
+    const now = new Date().toISOString()
+    const [p, v, i] = await Promise.all([
+      supabase.from('products').update({ deleted_at: now }).eq('id', productId),
+      supabase.from('product_variants').update({ deleted_at: now }).eq('product_id', productId),
+      supabase.from('product_images').update({ deleted_at: now }).eq('product_id', productId),
+    ])
+    if (p.error || v.error || i.error) { toast.error('Error al eliminar'); return }
     toast.success('Producto eliminado')
     forceRefresh((n) => n + 1)
   }
