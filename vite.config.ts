@@ -29,11 +29,16 @@ export default defineConfig({
   },
 
   build: {
+    cssMinify: false,
     rollupOptions: {
       output: {
         manualChunks,
       },
     },
+  },
+
+  optimizeDeps: {
+    entries: ['./src/main.tsx'],
   },
 
   test: {

@@ -34,7 +34,7 @@ describe('AdminGuard', () => {
 
   it('muestra children con sesión válida', () => {
     const mockUser = { id: 'u1', email: 'admin@dropen.com' } as never
-    const mockProfile = { user_id: 'u1', role: 'admin' as const, display_name: null, avatar_url: null }
+    const mockProfile = { id: 'u1', role: 'admin' as const, full_name: null }
     vi.mocked(useAdmin).mockReturnValue({
       user: mockUser, profile: mockProfile, role: 'admin', loading: false, signOut: vi.fn(), can: vi.fn(),
     })

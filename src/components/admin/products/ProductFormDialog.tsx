@@ -15,8 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import VariantsEditor, { type VariantDraft } from './VariantsEditor'
 import ImageUploader from './ImageUploader'
 import type { Product, Collection } from '@/types'
-
-const DEFAULT_CURRENCY = 'PEN'
+import { useSiteCurrency } from '@/hooks/useSiteCurrency'
 
 const schema = z.object({
   name: z.string().min(2, 'Nombre requerido'),
@@ -52,6 +51,7 @@ export default function ProductFormDialog({ open, product, collections, onClose,
   const isEdit = !!product
   const [variants, setVariants] = useState<VariantDraft[]>([])
   const [saving, setSaving] = useState(false)
+  const currency = useSiteCurrency()
 
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -126,7 +126,7 @@ export default function ProductFormDialog({ open, product, collections, onClose,
             slug: data.slug,
             collection_id: data.collection_id,
             price: data.price,
-            moneda_code: DEFAULT_CURRENCY,
+            moneda_code: currency.code,
             description: data.description ?? null,
             active: true,
           })
@@ -221,7 +221,7 @@ export default function ProductFormDialog({ open, product, collections, onClose,
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-xs text-text-muted uppercase tracking-wider">
-                      Precio ({DEFAULT_CURRENCY})
+                      Precio ({currency.code})
                     </FormLabel>
                     <FormControl>
                       <Input
