@@ -1,6 +1,48 @@
-import { motion, useReducedMotion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import { motion, useInView, useMotionValue, useReducedMotion, animate } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
+
+interface StatProps {
+  target: number
+  suffix?: string
+  label: string
+  delay?: number
+}
+
+function CountUpStat({ target, suffix = '', label, delay = 0 }: StatProps) {
+  const ref = useRef<HTMLDivElement>(null)
+  const inView = useInView(ref, { once: true })
+  const prefersReduced = useReducedMotion()
+  const motionValue = useMotionValue(0)
+  const [display, setDisplay] = useState(0)
+
+  useEffect(() => {
+    return motionValue.on('change', (v) => setDisplay(Math.round(v)))
+  }, [motionValue])
+
+  useEffect(() => {
+    if (!inView) return
+    if (prefersReduced) { setDisplay(target); return }
+    animate(motionValue, target, { duration: 1.2, ease: 'easeOut', delay })
+  }, [inView, target, prefersReduced, motionValue, delay])
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: prefersReduced ? 0 : 0.5, delay }}
+      className="text-center"
+    >
+      <p className="font-display font-bold text-4xl text-accent tabular-nums">
+        {display}{suffix}
+      </p>
+      <p className="text-xs text-text-muted uppercase tracking-widest mt-2">{label}</p>
+    </motion.div>
+  )
+}
 
 export default function BrandStatement() {
   const dur = useReducedMotion() ? 0 : 0.7
@@ -16,12 +58,19 @@ export default function BrandStatement() {
         >
           Pedidos por lote para distribuidores
         </motion.h2>
+
+        {/* Stats row */}
+        <div className="grid grid-cols-3 gap-8 my-14">
+          <CountUpStat target={50}  suffix="+"  label="Productos"    delay={0} />
+          <CountUpStat target={3}   suffix=""   label="Colecciones"  delay={0.15} />
+          <CountUpStat target={100} suffix="%"  label="Streetwear"   delay={0.3} />
+        </div>
+
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: dur, delay: 0.3 }}
-          className="mt-10"
         >
           <Button
             asChild
