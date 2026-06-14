@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import type { ProductVariant } from '@/types'
 
 interface Props {
@@ -46,8 +47,10 @@ export default function VariantSelector({ variants, selectedVariantId, onSelect 
             const isSelected = selected?.size === size
             const noStock = (v?.stock ?? 0) === 0
             return (
-              <button
+              <motion.button
                 key={size}
+                whileTap={{ scale: 0.92 }}
+                transition={{ duration: 0.1 }}
                 onClick={() => pickVariant(size, selected?.color ?? colors[0])}
                 disabled={noStock}
                 aria-pressed={isSelected}
@@ -58,7 +61,7 @@ export default function VariantSelector({ variants, selectedVariantId, onSelect 
                 }`}
               >
                 {size}
-              </button>
+              </motion.button>
             )
           })}
         </div>
@@ -75,8 +78,10 @@ export default function VariantSelector({ variants, selectedVariantId, onSelect 
             const noStock = (v?.stock ?? 0) === 0
             const hex = COLOR_HEX[color] ?? '#888'
             return (
-              <button
+              <motion.button
                 key={color}
+                whileTap={{ scale: 0.92 }}
+                transition={{ duration: 0.1 }}
                 onClick={() => pickVariant(selected?.size ?? sizes[0], color)}
                 disabled={noStock}
                 aria-pressed={isSelected}
