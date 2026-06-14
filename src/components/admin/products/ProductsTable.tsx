@@ -1,16 +1,13 @@
+import { useState } from 'react'
 import { ArrowUpDown, Pencil, Trash2, ToggleLeft, ToggleRight } from 'lucide-react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { DataTable } from '@/components/ui/data-table'
 import type { FilterField } from '@/components/ui/data-table'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import type { Product } from '@/types'
-
-const arsFormatter = new Intl.NumberFormat('es-AR', {
-  style: 'currency',
-  currency: 'ARS',
-  maximumFractionDigits: 0,
-})
+import { useSiteCurrency } from '@/hooks/useSiteCurrency'
 
 interface Props {
   products: Product[]
@@ -32,6 +29,8 @@ const filterFields: FilterField[] = [
 ]
 
 export default function ProductsTable({ products, onEdit, onDelete, onToggleActive }: Props) {
+  const currency = useSiteCurrency()
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null)
   const columns: ColumnDef<Product>[] = [
     {
       accessorKey: 'name',
@@ -64,7 +63,7 @@ export default function ProductsTable({ products, onEdit, onDelete, onToggleActi
         </Button>
       ),
       cell: ({ row }) => (
-        <span className="text-sm text-text-muted">{arsFormatter.format(row.original.price)}</span>
+        <span className="text-sm text-text-muted">{currency.format(row.original.price)}</span>
       ),
     },
     {
@@ -114,7 +113,7 @@ export default function ProductsTable({ products, onEdit, onDelete, onToggleActi
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => onDelete(product.id)}
+              onClick={() => setProductToDelete(product)}
               className="text-text-muted hover:text-error"
               aria-label="Eliminar"
             >
@@ -127,12 +126,47 @@ export default function ProductsTable({ products, onEdit, onDelete, onToggleActi
   ]
 
   return (
-    <DataTable
-      columns={columns}
-      data={products}
-      searchColumn="name"
-      searchPlaceholder="Buscar producto..."
-      filterFields={filterFields}
-    />
+    <>
+      <DataTable
+        columns={columns}
+        data={products}
+        searchColumn="name"
+        searchPlaceholder="Buscar producto..."
+        filterFields={filterFields}
+      />
+
+      <Sheet open={!!productToDelete} onOpenChange={(open) => !open && setProductToDelete(null)}>
+        <SheetContent side="right" className="bg-surface border-l border-border">
+          <SheetHeader>
+            <SheetTitle className="text-text-primary">Eliminar producto</SheetTitle>
+          </SheetHeader>
+          <div className="px-4 py-6 space-y-4">
+            <p className="text-sm text-text-primary">
+              ¿Eliminar <span className="font-medium">{productToDelete?.name}</span>?
+            </p>
+            <p className="text-xs text-text-muted">Esta acción no se puede deshacer.</p>
+            <div className="flex gap-3 pt-2">
+              <Button
+                variant="ghost"
+                onClick={() => setProductToDelete(null)}
+                className="flex-1"
+              >
+                Cancelar
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  if (productToDelete) onDelete(productToDelete.id)
+                  setProductToDelete(null)
+                }}
+                className="flex-1"
+              >
+                Sí, eliminar
+              </Button>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+    </>
   )
 }

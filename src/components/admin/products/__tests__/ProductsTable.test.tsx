@@ -27,4 +27,20 @@ describe('ProductsTable', () => {
     render(<ProductsTable products={[]} onEdit={vi.fn()} onDelete={vi.fn()} onToggleActive={vi.fn()} />)
     expect(screen.getByText(/no hay productos/i)).toBeInTheDocument()
   })
+
+  it('pide confirmación antes de eliminar', async () => {
+    const onDelete = vi.fn()
+    render(<ProductsTable products={[PRODUCT]} onEdit={vi.fn()} onDelete={onDelete} onToggleActive={vi.fn()} />)
+
+    // Click en papelera NO llama onDelete directamente
+    await userEvent.click(screen.getByRole('button', { name: 'Eliminar' }))
+    expect(onDelete).not.toHaveBeenCalled()
+
+    // El Sheet muestra el texto de advertencia
+    expect(screen.getByText(/esta acción no se puede deshacer/i)).toBeInTheDocument()
+
+    // Confirmar elimina
+    await userEvent.click(screen.getByRole('button', { name: /sí, eliminar/i }))
+    expect(onDelete).toHaveBeenCalledWith('p1')
+  })
 })
