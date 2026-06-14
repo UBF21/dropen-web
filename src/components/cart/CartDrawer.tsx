@@ -1,10 +1,11 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { X } from 'lucide-react'
+import { X, ShoppingBag } from 'lucide-react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { useCartStore, useCartTotal, useCartItemCount } from '@/store/cart.store'
 import { useUIStore } from '@/store/ui.store'
 import { useReservationStore } from '@/store/reservation.store'
+import { Link } from 'react-router-dom'
 import CartItem from './CartItem'
 import CartSummary from './CartSummary'
 import WhatsAppCheckout from '@/components/checkout/WhatsAppCheckout'
@@ -46,7 +47,22 @@ export default function CartDrawer() {
 
         <div className="flex-1 overflow-y-auto px-6">
           {items.length === 0 ? (
-            <div className="py-16 text-center text-text-muted text-sm">El carrito está vacío.</div>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="py-16 flex flex-col items-center justify-center gap-4 text-center"
+            >
+              <ShoppingBag className="w-12 h-12 text-text-muted opacity-30" />
+              <p className="text-sm text-text-muted">Tu carrito está vacío</p>
+              <Link
+                to="/colecciones"
+                onClick={closeCart}
+                className="text-accent text-xs hover:underline"
+              >
+                Explorá nuestras colecciones →
+              </Link>
+            </motion.div>
           ) : (
             <AnimatePresence>
               {items.map((item) => (
