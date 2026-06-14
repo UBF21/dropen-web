@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { LayoutDashboard, Package, Tag, Settings, LogOut, ScanBarcode, Barcode, Menu } from 'lucide-react'
 import { useAdmin } from '@/hooks/useAdmin'
+import { useAdminLowStockCount } from '@/hooks/useAdminLowStockCount'
 import { Sheet, SheetContent } from '@/components/ui/sheet'
 
 const NAV_ITEMS = [
@@ -26,11 +27,12 @@ function useMobile() {
 
 interface SidebarContentProps {
   role: string
+  lowStockCount: number
   onNavigate?: () => void
   onSignOut: () => void
 }
 
-function SidebarContent({ role, onNavigate, onSignOut }: SidebarContentProps) {
+function SidebarContent({ role, lowStockCount, onNavigate, onSignOut }: SidebarContentProps) {
   return (
     <>
       <div className="px-6 py-5 border-b border-border">
@@ -53,7 +55,12 @@ function SidebarContent({ role, onNavigate, onSignOut }: SidebarContentProps) {
             }
           >
             <Icon className="w-4 h-4" />
-            {label}
+            <span className="flex-1">{label}</span>
+            {to === '/admin/inventario' && lowStockCount > 0 && (
+              <span className="bg-red-600 text-white text-[10px] font-bold min-w-4 h-4 px-1 rounded-full flex items-center justify-center">
+                {lowStockCount > 9 ? '9+' : lowStockCount}
+              </span>
+            )}
           </NavLink>
         ))}
       </nav>
@@ -76,6 +83,7 @@ export default function AdminLayout() {
   const location = useLocation()
   const isMobile = useMobile()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { count: lowStockCount } = useAdminLowStockCount()
 
   useEffect(() => { setMobileOpen(false) }, [location.pathname])
 
@@ -91,7 +99,7 @@ export default function AdminLayout() {
       {/* Desktop sidebar — oculto en mobile */}
       {!isMobile && (
         <aside className="w-60 bg-surface border-r border-border flex flex-col shrink-0">
-          <SidebarContent role={role} onSignOut={handleSignOut} />
+          <SidebarContent role={role} lowStockCount={lowStockCount} onSignOut={handleSignOut} />
         </aside>
       )}
 
@@ -121,6 +129,7 @@ export default function AdminLayout() {
           >
             <SidebarContent
               role={role}
+              lowStockCount={lowStockCount}
               onNavigate={() => setMobileOpen(false)}
               onSignOut={handleSignOut}
             />
