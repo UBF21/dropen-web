@@ -12,7 +12,7 @@ const SUPABASE_STORAGE = 'supabase.co/storage'
 export function productImgSrc(url: string | null | undefined, width = 600): string {
   const DEFAULT =
     'https://icfqhtiujsboyrggxpqu.supabase.co/storage/v1/object/public/product-images/marzuk-nike-5578104_1920.jpg'
-  if (!url) return DEFAULT
+  if (!url || url.includes('placehold.co')) return DEFAULT
   if (url.includes(SUPABASE_STORAGE)) return `${url}?width=${width}&quality=80`
   return url
 }
