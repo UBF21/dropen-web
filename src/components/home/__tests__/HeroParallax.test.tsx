@@ -15,4 +15,23 @@ describe('HeroParallax', () => {
     expect(screen.getByRole('link', { name: /ver colecciones/i }))
       .toHaveAttribute('href', '/colecciones')
   })
+
+  it('renderiza imagen de fondo con jeans-stack', () => {
+    render(<MemoryRouter><HeroParallax /></MemoryRouter>)
+    const imgs = document.querySelectorAll('img')
+    const srcs = Array.from(imgs).map(img => img.getAttribute('src') ?? '')
+    expect(srcs.some(s => s.includes('jeans-stack.jpg'))).toBe(true)
+  })
+
+  it('renderiza panel flotante con jeans-detail', () => {
+    render(<MemoryRouter><HeroParallax /></MemoryRouter>)
+    const imgs = document.querySelectorAll('img')
+    const srcs = Array.from(imgs).map(img => img.getAttribute('src') ?? '')
+    expect(srcs.some(s => s.includes('jeans-detail.jpg'))).toBe(true)
+  })
+
+  it('incluye grain overlay SVG', () => {
+    render(<MemoryRouter><HeroParallax /></MemoryRouter>)
+    expect(document.querySelector('#dropen-grain')).toBeInTheDocument()
+  })
 })

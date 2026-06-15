@@ -6,20 +6,65 @@ import { Link } from 'react-router-dom'
 import { ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
+const HERO_BG =
+  'https://icfqhtiujsboyrggxpqu.supabase.co/storage/v1/object/public/product-images/hero/jeans-stack.jpg'
+const HERO_PANEL =
+  'https://icfqhtiujsboyrggxpqu.supabase.co/storage/v1/object/public/product-images/hero/jeans-detail.jpg'
+
 export default function HeroParallax() {
   const ref = useRef<HTMLDivElement>(null)
   const prefersReduced = useReducedMotion()
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
   const bgY = useTransform(scrollYProgress, [0, 1], ['0%', prefersReduced ? '0%' : '50%'])
   const indicatorOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0])
+  const panelY = useTransform(scrollYProgress, [0, 1], ['0%', prefersReduced ? '0%' : '-65px'])
 
   return (
     <div ref={ref} className="relative h-screen overflow-hidden">
-      <motion.div style={{ y: bgY }} className="absolute inset-0 bg-surface" aria-hidden>
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/40 to-background" />
+      <motion.div style={{ y: bgY }} className="absolute inset-0" aria-hidden>
+        <img
+          src={HERO_BG}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+          fetchPriority="high"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/30 to-transparent" />
       </motion.div>
 
-      <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4">
+      {/* Grain overlay */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ opacity: 0.04 }}
+        aria-hidden
+      >
+        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <filter id="dropen-grain">
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="0.65"
+              numOctaves="3"
+              stitchTiles="stitch"
+            />
+            <feColorMatrix type="saturate" values="0" />
+          </filter>
+          <rect width="100%" height="100%" filter="url(#dropen-grain)" />
+        </svg>
+      </div>
+
+      {/* Panel editorial flotante — solo desktop */}
+      <motion.div
+        style={{ y: panelY }}
+        className="absolute right-0 top-0 h-full w-[38%] hidden md:block border-l border-border overflow-hidden"
+        aria-hidden
+      >
+        <img
+          src={HERO_PANEL}
+          alt=""
+          className="w-full h-full object-cover object-center"
+        />
+      </motion.div>
+
+      <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4 md:pr-[40%]">
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
