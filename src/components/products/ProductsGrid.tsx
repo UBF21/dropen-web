@@ -3,9 +3,7 @@ import { motion } from 'framer-motion'
 import { Badge } from '@/components/ui/badge'
 import type { CatalogProduct } from '@/hooks/useProductsCatalog'
 import { formatCurrency } from '@/lib/currency'
-
-const DEFAULT_PRODUCT_IMAGE =
-  'https://icfqhtiujsboyrggxpqu.supabase.co/storage/v1/object/public/product-images/marzuk-nike-5578104_1920.jpg'
+import { productImgSrc } from '@/lib/utils'
 
 const container = {
   hidden: {},
@@ -31,9 +29,7 @@ function CatalogProductCard({ product }: CatalogCardProps) {
       >
         <div className="relative overflow-hidden aspect-[3/4] bg-surface mb-3">
           <img
-            src={product.primary_image_url
-              ? `${product.primary_image_url}?width=600&quality=80`
-              : DEFAULT_PRODUCT_IMAGE}
+            src={productImgSrc(product.primary_image_url)}
             alt={product.name}
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           />

@@ -3,14 +3,12 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { Badge } from '@/components/ui/badge'
 import type { Product } from '@/types'
 import { formatCurrency } from '@/lib/currency'
+import { productImgSrc } from '@/lib/utils'
 
 interface Props {
   product: Product
   index?: number
 }
-
-const DEFAULT_PRODUCT_IMAGE =
-  'https://icfqhtiujsboyrggxpqu.supabase.co/storage/v1/object/public/product-images/marzuk-nike-5578104_1920.jpg'
 
 function getPrimaryImageUrl(product: Product): string | null {
   if (!product.images?.length) return null
@@ -46,7 +44,7 @@ export default function ProductCard({ product, index = 0 }: Props) {
       >
         <div className="relative overflow-hidden aspect-[3/4] bg-surface mb-4">
           <img
-            src={imageUrl ? `${imageUrl}?width=600&quality=80` : DEFAULT_PRODUCT_IMAGE}
+            src={productImgSrc(imageUrl)}
             alt={product.name}
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           />
