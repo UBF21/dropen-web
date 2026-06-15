@@ -22,11 +22,13 @@ export default function ProductsPriceSlider({
   const fmt = formatValue ?? ((v: number) => String(v))
 
   function handleMinInput(e: React.ChangeEvent<HTMLInputElement>) {
+    if (e.target.value === '' || isNaN(Number(e.target.value))) return
     const v = Math.min(Number(e.target.value), value[1])
     onValueChange([Math.max(min, v), value[1]])
   }
 
   function handleMaxInput(e: React.ChangeEvent<HTMLInputElement>) {
+    if (e.target.value === '' || isNaN(Number(e.target.value))) return
     const v = Math.max(Number(e.target.value), value[0])
     onValueChange([value[0], Math.min(max, v)])
   }
