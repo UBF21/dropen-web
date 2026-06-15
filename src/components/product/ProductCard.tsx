@@ -9,6 +9,9 @@ interface Props {
   index?: number
 }
 
+const DEFAULT_PRODUCT_IMAGE =
+  'https://icfqhtiujsboyrggxpqu.supabase.co/storage/v1/object/public/product-images/marzuk-nike-5578104_1920.jpg'
+
 function getPrimaryImageUrl(product: Product): string | null {
   if (!product.images?.length) return null
   return (
@@ -42,29 +45,21 @@ export default function ProductCard({ product, index = 0 }: Props) {
         aria-label={product.name}
       >
         <div className="relative overflow-hidden aspect-[3/4] bg-surface mb-4">
-          {imageUrl ? (
-            <img
-              src={`${imageUrl}?width=600&quality=80`}
-              alt={product.name}
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-            />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center text-text-muted text-sm">
-              Sin imagen
-            </div>
-          )}
-          {imageUrl && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileHover={{ opacity: 1 }}
-              transition={{ duration: 0.2 }}
-              className="absolute inset-0 bg-background/50 backdrop-blur-[2px] flex items-center justify-center pointer-events-none"
-            >
-              <span className="text-text-primary text-xs tracking-[0.2em] uppercase font-medium">
-                Ver producto
-              </span>
-            </motion.div>
-          )}
+          <img
+            src={imageUrl ? `${imageUrl}?width=600&quality=80` : DEFAULT_PRODUCT_IMAGE}
+            alt={product.name}
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          />
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileHover={{ opacity: 1 }}
+            transition={{ duration: 0.2 }}
+            className="absolute inset-0 bg-background/50 backdrop-blur-[2px] flex items-center justify-center pointer-events-none"
+          >
+            <span className="text-text-primary text-xs tracking-[0.2em] uppercase font-medium">
+              Ver producto
+            </span>
+          </motion.div>
           {outOfStock && (
             <div className="absolute inset-0 bg-background/60 flex items-center justify-center">
               <Badge variant="secondary">Agotado</Badge>

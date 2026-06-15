@@ -4,6 +4,9 @@ import { Badge } from '@/components/ui/badge'
 import type { CatalogProduct } from '@/hooks/useProductsCatalog'
 import { formatCurrency } from '@/lib/currency'
 
+const DEFAULT_PRODUCT_IMAGE =
+  'https://icfqhtiujsboyrggxpqu.supabase.co/storage/v1/object/public/product-images/marzuk-nike-5578104_1920.jpg'
+
 const container = {
   hidden: {},
   show: { transition: { staggerChildren: 0.05 } },
@@ -27,24 +30,18 @@ function CatalogProductCard({ product }: CatalogCardProps) {
         className="group block"
       >
         <div className="relative overflow-hidden aspect-[3/4] bg-surface mb-3">
-          {product.primary_image_url ? (
-            <img
-              src={`${product.primary_image_url}?width=600&quality=80`}
-              alt={product.name}
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-            />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center text-text-muted text-sm">
-              Sin imagen
-            </div>
-          )}
-          {product.primary_image_url && (
-            <div className="absolute inset-0 bg-background/50 backdrop-blur-[2px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-              <span className="text-text-primary text-xs tracking-[0.2em] uppercase font-medium">
-                Ver producto
-              </span>
-            </div>
-          )}
+          <img
+            src={product.primary_image_url
+              ? `${product.primary_image_url}?width=600&quality=80`
+              : DEFAULT_PRODUCT_IMAGE}
+            alt={product.name}
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          />
+          <div className="absolute inset-0 bg-background/50 backdrop-blur-[2px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+            <span className="text-text-primary text-xs tracking-[0.2em] uppercase font-medium">
+              Ver producto
+            </span>
+          </div>
           {outOfStock && (
             <div className="absolute inset-0 bg-background/60 flex items-center justify-center">
               <Badge variant="secondary">Agotado</Badge>
