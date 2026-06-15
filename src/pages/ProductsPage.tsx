@@ -75,7 +75,7 @@ export default function ProductsPage() {
     setSearchParams({}, { replace: true })
   }
 
-  const gridKey = `${filters.pagina}-${filters.tallas.join(',')}-${filters.colores.join(',')}-${filters.orden}-${filters.soloStock}`
+  const gridKey = `${filters.pagina}-${filters.tallas.join(',')}-${filters.colores.join(',')}-${filters.orden}-${filters.soloStock}-${filters.precioMin}-${filters.precioMax}`
 
   if (metaLoading) {
     return (
