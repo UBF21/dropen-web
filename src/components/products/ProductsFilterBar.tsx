@@ -53,6 +53,7 @@ export default function ProductsFilterBar({
 
           <select
             value={filters.orden}
+            aria-label="Ordenar por"
             onChange={(e) =>
               onFiltersChange({ orden: e.target.value as CatalogFilters['orden'] })
             }
