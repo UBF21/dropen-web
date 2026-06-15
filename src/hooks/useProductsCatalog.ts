@@ -47,10 +47,21 @@ export function useProductsCatalogMeta(): UseCatalogMetaResult {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    supabase.rpc('get_products_catalog_meta').then(({ data, error }) => {
-      if (!error && data) setMeta(data as CatalogMeta)
-      setLoading(false)
-    })
+    let cancelled = false
+    Promise.resolve(
+      supabase.rpc('get_products_catalog_meta')
+    )
+      .then(({ data, error }) => {
+        if (cancelled) return
+        if (!error && data) setMeta(data as CatalogMeta)
+        setLoading(false)
+      })
+      .catch(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   return { meta, loading }
@@ -66,11 +77,12 @@ export function useProductsCatalog(filters: CatalogFilters): UseCatalogResult {
   const coloresKey = [...filters.colores].sort().join(',')
 
   useEffect(() => {
+    let cancelled = false
     setLoading(true)
     setError(null)
 
-    supabase
-      .rpc('get_products_catalog', {
+    Promise.resolve(
+      supabase.rpc('get_products_catalog', {
         p_filters: {
           precio_min: filters.precioMin,
           precio_max: filters.precioMax,
@@ -82,7 +94,9 @@ export function useProductsCatalog(filters: CatalogFilters): UseCatalogResult {
           por_pagina: filters.porPagina,
         },
       })
+    )
       .then(({ data, error: err }) => {
+        if (cancelled) return
         if (err) {
           setError(err.message)
           setProducts([])
@@ -95,6 +109,17 @@ export function useProductsCatalog(filters: CatalogFilters): UseCatalogResult {
         }
         setLoading(false)
       })
+      .catch((e: Error) => {
+        if (cancelled) return
+        setError(e.message)
+        setProducts([])
+        setTotalCount(0)
+        setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     filters.precioMin,
