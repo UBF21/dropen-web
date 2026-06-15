@@ -25,7 +25,6 @@ function CatalogProductCard({ product }: CatalogCardProps) {
       <Link
         to={`/productos/${product.slug}`}
         className="group block"
-        aria-label={product.name}
       >
         <div className="relative overflow-hidden aspect-[3/4] bg-surface mb-3">
           {product.primary_image_url ? (
