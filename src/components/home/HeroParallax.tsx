@@ -21,7 +21,18 @@ export default function HeroParallax() {
   const panelY = useTransform(scrollYProgress, [0, 1], ['0%', prefersReduced ? '0%' : '-65px'])
 
   return (
-    <div ref={ref} className="relative h-screen overflow-hidden">
+    <motion.div
+      ref={ref}
+      className="relative h-screen overflow-hidden"
+      {...(prefersReduced
+        ? {}
+        : {
+            initial: { clipPath: 'inset(50% 50% 50% 50%)' },
+            animate: { clipPath: 'inset(0% 0% 0% 0%)' },
+            transition: { duration: 1.2, ease: [0.76, 0, 0.24, 1] },
+          }
+      )}
+    >
       <motion.div style={{ y: bgY }} className="absolute inset-0" aria-hidden="true">
         <img
           src={HERO_BG}
@@ -57,6 +68,14 @@ export default function HeroParallax() {
         style={{ y: panelY }}
         className="absolute right-0 top-0 h-full w-[38%] hidden md:block border-l border-border overflow-hidden"
         aria-hidden="true"
+        {...(prefersReduced
+          ? { initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.6 } }
+          : {
+              initial: { clipPath: 'inset(0% 0% 0% 100%)' },
+              animate: { clipPath: 'inset(0% 0% 0% 0%)' },
+              transition: { duration: 0.9, ease: [0.76, 0, 0.24, 1], delay: 0.4 },
+            }
+        )}
       >
         <img
           src={HERO_PANEL}
@@ -70,7 +89,7 @@ export default function HeroParallax() {
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
+          transition={{ duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94], delay: prefersReduced ? 0 : 0.9 }}
           className="font-display font-bold text-7xl md:text-9xl tracking-[0.2em] text-text-primary"
         >
           DROPEN
@@ -78,7 +97,7 @@ export default function HeroParallax() {
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.3 }}
+          transition={{ duration: 0.9, delay: prefersReduced ? 0.3 : 1.2 }}
           className="mt-4 text-text-muted text-base md:text-lg tracking-widest uppercase"
         >
           Jeans baggy de edición limitada
@@ -86,7 +105,7 @@ export default function HeroParallax() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.6 }}
+          transition={{ duration: 0.9, delay: prefersReduced ? 0.6 : 1.5 }}
           className="mt-10"
         >
           <Button
@@ -113,6 +132,6 @@ export default function HeroParallax() {
           </motion.div>
         </motion.div>
       </AnimatePresence>
-    </div>
+    </motion.div>
   )
 }
