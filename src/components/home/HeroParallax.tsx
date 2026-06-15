@@ -6,10 +6,8 @@ import { Link } from 'react-router-dom'
 import { ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
-const HERO_BG =
-  'https://icfqhtiujsboyrggxpqu.supabase.co/storage/v1/object/public/product-images/hero/jeans-stack.jpg'
-const HERO_PANEL =
-  'https://icfqhtiujsboyrggxpqu.supabase.co/storage/v1/object/public/product-images/hero/jeans-detail.jpg'
+const HERO_BG = '/images/hero/jeans-stack.jpg'
+const HERO_PANEL = '/images/hero/jeans-detail.jpg'
 
 export default function HeroParallax() {
   const ref = useRef<HTMLDivElement>(null)
