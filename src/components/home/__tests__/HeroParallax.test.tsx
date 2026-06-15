@@ -32,6 +32,6 @@ describe('HeroParallax', () => {
 
   it('incluye grain overlay SVG', () => {
     render(<MemoryRouter><HeroParallax /></MemoryRouter>)
-    expect(document.querySelector('#dropen-grain')).toBeInTheDocument()
+    expect(document.querySelector('filter[id]')).toBeInTheDocument()
   })
 })

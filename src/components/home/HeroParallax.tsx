@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useId } from 'react'
 import {
   motion, useScroll, useTransform, useReducedMotion, AnimatePresence,
 } from 'framer-motion'
@@ -14,6 +14,7 @@ const HERO_PANEL =
 export default function HeroParallax() {
   const ref = useRef<HTMLDivElement>(null)
   const prefersReduced = useReducedMotion()
+  const grainId = useId()
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
   const bgY = useTransform(scrollYProgress, [0, 1], ['0%', prefersReduced ? '0%' : '50%'])
   const indicatorOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0])
@@ -21,7 +22,7 @@ export default function HeroParallax() {
 
   return (
     <div ref={ref} className="relative h-screen overflow-hidden">
-      <motion.div style={{ y: bgY }} className="absolute inset-0" aria-hidden>
+      <motion.div style={{ y: bgY }} className="absolute inset-0" aria-hidden="true">
         <img
           src={HERO_BG}
           alt=""
@@ -35,10 +36,10 @@ export default function HeroParallax() {
       <div
         className="absolute inset-0 pointer-events-none"
         style={{ opacity: 0.04 }}
-        aria-hidden
+        aria-hidden="true"
       >
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-          <filter id="dropen-grain">
+          <filter id={grainId}>
             <feTurbulence
               type="fractalNoise"
               baseFrequency="0.65"
@@ -47,7 +48,7 @@ export default function HeroParallax() {
             />
             <feColorMatrix type="saturate" values="0" />
           </filter>
-          <rect width="100%" height="100%" filter="url(#dropen-grain)" />
+          <rect width="100%" height="100%" filter={`url(#${grainId})`} />
         </svg>
       </div>
 
@@ -55,11 +56,12 @@ export default function HeroParallax() {
       <motion.div
         style={{ y: panelY }}
         className="absolute right-0 top-0 h-full w-[38%] hidden md:block border-l border-border overflow-hidden"
-        aria-hidden
+        aria-hidden="true"
       >
         <img
           src={HERO_PANEL}
           alt=""
+          loading="lazy"
           className="w-full h-full object-cover object-center"
         />
       </motion.div>
@@ -79,7 +81,7 @@ export default function HeroParallax() {
           transition={{ duration: 0.9, delay: 0.3 }}
           className="mt-4 text-text-muted text-base md:text-lg tracking-widest uppercase"
         >
-          Jeans baggy de edicion limitada
+          Jeans baggy de edición limitada
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
