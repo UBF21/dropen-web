@@ -9,6 +9,7 @@ export const mockIn = vi.fn()
 export const mockSingle = vi.fn()
 export const mockLte = vi.fn()
 export const mockGt = vi.fn()
+export const mockRpc = vi.fn()
 
 const chain: Record<string, ReturnType<typeof vi.fn>> = {
   select: mockSelect,
@@ -25,6 +26,7 @@ Object.values(chain).forEach((fn) => fn.mockReturnValue(chain))
 
 export const mockSupabase = {
   from: mockFrom.mockReturnValue(chain),
+  rpc: mockRpc,
   auth: {
     getSession: vi.fn(),
     signInWithPassword: vi.fn(),
