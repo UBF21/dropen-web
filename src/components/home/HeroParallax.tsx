@@ -1,6 +1,6 @@
 import { useRef, useId } from 'react'
 import {
-  motion, useScroll, useTransform, useReducedMotion, AnimatePresence,
+  motion, useScroll, useTransform, useReducedMotion,
 } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { ChevronDown } from 'lucide-react'
@@ -117,20 +117,18 @@ export default function HeroParallax() {
       </div>
 
       {/* Scroll indicator */}
-      <AnimatePresence>
+      <motion.div
+        style={{ opacity: indicatorOpacity }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 pointer-events-none"
+        aria-hidden="true"
+      >
         <motion.div
-          style={{ opacity: indicatorOpacity }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 pointer-events-none"
-          aria-hidden="true"
+          animate={prefersReduced ? {} : { y: [0, 8, 0] }}
+          transition={{ repeat: Infinity, duration: 1.4, ease: 'easeInOut' }}
         >
-          <motion.div
-            animate={prefersReduced ? {} : { y: [0, 8, 0] }}
-            transition={{ repeat: Infinity, duration: 1.4, ease: 'easeInOut' }}
-          >
-            <ChevronDown className="w-6 h-6 text-text-muted" />
-          </motion.div>
+          <ChevronDown className="w-6 h-6 text-text-muted" />
         </motion.div>
-      </AnimatePresence>
+      </motion.div>
     </motion.div>
   )
 }

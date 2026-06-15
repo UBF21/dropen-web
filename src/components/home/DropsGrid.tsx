@@ -46,7 +46,7 @@ export default function DropsGrid({ collections, limit }: Props) {
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
                 <div className="absolute bottom-6 left-6">
-                  <p className="text-text-muted text-xs tracking-widest uppercase mb-1">Coleccion</p>
+                  <p className="text-text-muted text-xs tracking-widest uppercase mb-1">Colección</p>
                   <h3 className="font-display font-bold text-2xl text-text-primary">{col.name}</h3>
                 </div>
               </Link>
