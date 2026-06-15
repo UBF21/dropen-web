@@ -80,7 +80,6 @@ export default function HeroParallax() {
         <img
           src={HERO_PANEL}
           alt=""
-          loading="lazy"
           className="w-full h-full object-cover object-center"
         />
       </motion.div>
