@@ -56,7 +56,7 @@ LANGUAGE sql
 STABLE
 AS $$
   WITH filtered AS (
-    SELECT DISTINCT
+    SELECT
       p.id,
       p.name,
       p.slug,
@@ -85,8 +85,6 @@ AS $$
         0
       ) AS reservation_count
     FROM products p
-    LEFT JOIN product_variants pv
-      ON pv.product_id = p.id AND pv.deleted_at IS NULL
     WHERE p.collection_id IS NULL
       AND p.active = true
       AND p.deleted_at IS NULL
@@ -101,7 +99,7 @@ AS $$
         ) > 0
       )
       AND (
-        (p_filters->'tallas') IS NULL
+        COALESCE(jsonb_typeof(p_filters->'tallas'), '') != 'array'
         OR jsonb_array_length(p_filters->'tallas') = 0
         OR EXISTS (
           SELECT 1 FROM product_variants pv5
@@ -113,7 +111,7 @@ AS $$
         )
       )
       AND (
-        (p_filters->'colores') IS NULL
+        COALESCE(jsonb_typeof(p_filters->'colores'), '') != 'array'
         OR jsonb_array_length(p_filters->'colores') = 0
         OR EXISTS (
           SELECT 1 FROM product_variants pv6
