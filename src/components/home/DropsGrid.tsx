@@ -22,12 +22,13 @@ export default function DropsGrid({ collections, limit }: Props) {
           {items.map((col, i) => (
             <motion.div
               key={col.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              initial={{ scale: 0.85, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              viewport={{ once: true, amount: 0.15 }}
               transition={{
-                duration: prefersReduced ? 0 : 0.5,
-                delay: prefersReduced ? 0 : i * 0.1,
+                duration: prefersReduced ? 0 : 0.6,
+                ease: [0.16, 1, 0.3, 1],
+                delay: prefersReduced ? 0 : i * 0.15,
               }}
             >
               <Link
