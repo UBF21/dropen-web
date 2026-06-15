@@ -7,7 +7,8 @@ import { useUIStore } from '@/store/ui.store'
 
 const NAV_LINKS = [
   { to: '/colecciones', label: 'Colecciones' },
-  { to: '/wholesale', label: 'Wholesale' },
+  { to: '/productos',   label: 'Productos' },
+  { to: '/wholesale',   label: 'Wholesale' },
 ]
 
 export default function Header() {
