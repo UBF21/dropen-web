@@ -1,9 +1,9 @@
 ﻿import { Link } from 'react-router-dom'
 import { motion, useReducedMotion } from 'framer-motion'
-import { Badge } from '@/components/ui/badge'
 import type { Product } from '@/types'
 import { formatCurrency } from '@/lib/currency'
 import { productImgSrc } from '@/lib/utils'
+import { useLowStockThreshold } from '@/hooks/useSiteSettings'
 
 interface Props {
   product: Product
@@ -24,8 +24,11 @@ function getTotalStock(product: Product): number {
 
 export default function ProductCard({ product, index = 0 }: Props) {
   const prefersReduced = useReducedMotion()
+  const lowStockThreshold = useLowStockThreshold()
   const imageUrl = getPrimaryImageUrl(product)
-  const outOfStock = getTotalStock(product) === 0
+  const totalStock = getTotalStock(product)
+  const outOfStock = totalStock === 0
+  const lowStock = !outOfStock && totalStock <= lowStockThreshold
 
   return (
     <motion.div
@@ -46,7 +49,7 @@ export default function ProductCard({ product, index = 0 }: Props) {
           <img
             src={productImgSrc(imageUrl)}
             alt={product.name}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            className={`absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03] ${outOfStock ? 'grayscale' : ''}`}
           />
           <motion.div
             initial={{ opacity: 0 }}
@@ -58,9 +61,19 @@ export default function ProductCard({ product, index = 0 }: Props) {
               Ver producto
             </span>
           </motion.div>
+          {lowStock && (
+            <div className="absolute bottom-0 inset-x-0 z-10 h-8 bg-background/85 backdrop-blur-sm flex items-center gap-2.5 px-3">
+              <span className="block h-3.5 w-px bg-accent shrink-0" aria-hidden="true" />
+              <span className="text-accent text-[11px] font-semibold tracking-[0.2em] uppercase">
+                Últimas {totalStock} unidades
+              </span>
+            </div>
+          )}
           {outOfStock && (
             <div className="absolute inset-0 bg-background/60 flex items-center justify-center">
-              <Badge variant="secondary">Agotado</Badge>
+              <span className="font-display font-bold text-lg tracking-[0.3em] uppercase text-text-primary">
+                Agotado
+              </span>
             </div>
           )}
         </div>

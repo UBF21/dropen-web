@@ -24,6 +24,7 @@ const BASE_INPUT = {
   last_name: 'Montenegro',
   doc_type: 'DNI' as const,
   doc_number: '74521803',
+  phone: '+51999888777',
   address: 'Av. Javier Prado 1520, Miraflores',
   lat: -12.0953,
   lng: -77.0278,

@@ -2,21 +2,36 @@ import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 import type { ProductImage } from '@/types'
+import { productImgSrc } from '@/lib/utils'
 
 interface Props {
   images: ProductImage[]
   productName: string
+  fullyAgotado?: boolean
 }
 
-export default function ProductGallery({ images, productName }: Props) {
-  const sorted = [...images].sort((a, b) => a.order - b.order)
+export default function ProductGallery({ images, productName, fullyAgotado = false }: Props) {
+  const sorted = [...images]
+    .sort((a, b) => a.order - b.order)
+    .filter((img) => !img.url.includes('placehold.co'))
   const [activeIdx, setActiveIdx] = useState(0)
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
 
   if (sorted.length === 0) {
     return (
-      <div className="aspect-[3/4] bg-surface flex items-center justify-center text-text-muted text-sm">
-        Sin imagen
+      <div className="aspect-[3/4] bg-surface overflow-hidden relative">
+        <img
+          src={productImgSrc(null, 900, 85)}
+          alt={productName}
+          className={`w-full h-full object-cover ${fullyAgotado ? 'grayscale' : ''}`}
+        />
+        {fullyAgotado && (
+          <div className="absolute inset-0 bg-background/60 flex items-center justify-center pointer-events-none">
+            <span className="font-display font-bold text-4xl tracking-[0.3em] uppercase text-text-primary">
+              Agotado
+            </span>
+          </div>
+        )}
       </div>
     )
   }
@@ -39,10 +54,17 @@ export default function ProductGallery({ images, productName }: Props) {
         className="group aspect-[3/4] overflow-hidden bg-surface block"
       >
         <img
-          src={`${active.url}?width=900&quality=85`}
+          src={productImgSrc(active.url, 900, 85)}
           alt={active.alt_text ?? productName}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.08]"
+          className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.08] ${fullyAgotado ? 'grayscale' : ''}`}
         />
+        {fullyAgotado && (
+          <div className="absolute inset-0 bg-background/60 flex items-center justify-center pointer-events-none">
+            <span className="font-display font-bold text-4xl tracking-[0.3em] uppercase text-text-primary">
+              Agotado
+            </span>
+          </div>
+        )}
       </button>
 
       {sorted.length > 1 && (
@@ -57,7 +79,7 @@ export default function ProductGallery({ images, productName }: Props) {
               }`}
             >
               <img
-                src={`${img.url}?width=150&quality=70`}
+                src={productImgSrc(img.url, 150, 70)}
                 alt=""
                 className="w-full h-full object-cover"
               />
@@ -107,7 +129,7 @@ export default function ProductGallery({ images, productName }: Props) {
             )}
 
             <img
-              src={`${active.url}?width=1600&quality=90`}
+              src={productImgSrc(active.url, 1600, 90)}
               alt={active.alt_text ?? productName}
               onClick={(e) => e.stopPropagation()}
               className="max-w-[90vw] max-h-[90vh] object-contain"

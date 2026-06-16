@@ -12,6 +12,17 @@
     @apply bg-background text-text-primary font-body antialiased;
     margin: 0;
   }
+
+  /* Ocultar spinners nativos en inputs numéricos globalmente */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
 }
 
 @media print {

@@ -1,7 +1,7 @@
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-leaflet'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { MapPin, CheckCircle2 } from 'lucide-react'
 import { useOrderStore } from '@/store/order.store'
 import { Button } from '@/components/ui/button'

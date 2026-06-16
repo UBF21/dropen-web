@@ -40,8 +40,10 @@ describe('ProductGallery', () => {
     expect(screen.getByRole('button', { name: /cerrar/i })).toBeInTheDocument()
   })
 
-  it('muestra "Sin imagen" cuando no hay imágenes', () => {
+  it('muestra imagen por default cuando no hay imágenes', () => {
     render(<ProductGallery images={[]} productName="Jean" />)
-    expect(screen.getByText(/sin imagen/i)).toBeInTheDocument()
+    const img = screen.getByAltText('Jean')
+    expect(img).toBeInTheDocument()
+    expect((img as HTMLImageElement).src).toContain('marzuk-nike-5578104_1920.jpg')
   })
 })

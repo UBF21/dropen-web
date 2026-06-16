@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { toast } from 'sonner'
-import { ChevronLeft, ShoppingBag } from 'lucide-react'
+import { ChevronLeft, ShoppingBag, ChevronUp, ChevronDown } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useProduct } from '@/hooks/useProducts'
 import { useCart } from '@/hooks/useCart'
@@ -9,6 +9,7 @@ import { useUIStore } from '@/store/ui.store'
 import ProductGallery from '@/components/product/ProductGallery'
 import VariantSelector from '@/components/product/VariantSelector'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import PageMeta from '@/components/seo/PageMeta'
 import { formatCurrency } from '@/lib/currency'
@@ -19,6 +20,7 @@ export default function ProductPage() {
   const { addProductVariant } = useCart()
   const openCart = useUIStore((s) => s.openCart)
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null)
+  const [quantity, setQuantity] = useState(1)
 
   const ctaRef = useRef<HTMLDivElement>(null)
   const [isCtaVisible, setIsCtaVisible] = useState(true)
@@ -35,14 +37,21 @@ export default function ProductPage() {
   }, [product])
 
   const selectedVariant = product?.variants?.find((v) => v.id === selectedVariantId)
-  const outOfStock = selectedVariant ? selectedVariant.stock === 0 : false
+  const fullyAgotado = !loading && !!product && (product.variants?.every((v) => v.stock === 0) ?? false)
+  const outOfStock = fullyAgotado || (selectedVariant ? selectedVariant.stock === 0 : false)
+  const maxQty = selectedVariant?.stock ?? 1
+
+  function handleSelectVariant(id: string) {
+    setSelectedVariantId(id)
+    setQuantity(1)
+  }
 
   function handleAddToCart() {
     if (!product || !selectedVariant) {
       toast.error('Seleccioná una talla y color antes de agregar al carrito.')
       return
     }
-    addProductVariant(product, selectedVariant)
+    addProductVariant(product, selectedVariant, quantity)
     toast.success(`${product.name} agregado al carrito`)
     openCart()
   }
@@ -107,7 +116,7 @@ export default function ProductPage() {
       </Link>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        <ProductGallery images={product.images ?? []} productName={product.name} />
+        <ProductGallery images={product.images ?? []} productName={product.name} fullyAgotado={fullyAgotado} />
 
         <div className="space-y-8">
           <div>
@@ -130,8 +139,50 @@ export default function ProductPage() {
             <VariantSelector
               variants={product.variants}
               selectedVariantId={selectedVariantId}
-              onSelect={setSelectedVariantId}
+              onSelect={handleSelectVariant}
+              fullyAgotado={fullyAgotado}
             />
+          )}
+
+          {selectedVariant && !outOfStock && (
+            <div className="space-y-2">
+              <p className="text-xs text-text-muted uppercase tracking-widest">Cantidad</p>
+              <div className="flex items-center gap-0">
+                <button
+                  type="button"
+                  aria-label="Disminuir cantidad"
+                  disabled={quantity <= 1}
+                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                  className="w-10 h-10 border border-border flex items-center justify-center text-text-primary hover:border-accent hover:text-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+                <Input
+                  type="number"
+                  min={1}
+                  max={maxQty}
+                  value={quantity}
+                  onChange={(e) => {
+                    const v = Math.max(1, Math.min(maxQty, Number(e.target.value)))
+                    setQuantity(isNaN(v) ? 1 : v)
+                  }}
+                  onWheel={(e) => e.currentTarget.blur()}
+                  className="w-14 h-10 rounded-none border-y border-x-0 border-border bg-transparent text-center text-sm text-text-primary focus-visible:ring-0 focus-visible:border-y-accent"
+                />
+                <button
+                  type="button"
+                  aria-label="Aumentar cantidad"
+                  disabled={quantity >= maxQty}
+                  onClick={() => setQuantity((q) => Math.min(maxQty, q + 1))}
+                  className="w-10 h-10 border border-border flex items-center justify-center text-text-primary hover:border-accent hover:text-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  <ChevronUp className="w-4 h-4" />
+                </button>
+                <span className="ml-3 text-xs text-text-muted">
+                  {maxQty} {maxQty === 1 ? 'unidad disponible' : 'unidades disponibles'}
+                </span>
+              </div>
+            </div>
           )}
 
           <div ref={ctaRef}>

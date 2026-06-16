@@ -33,7 +33,7 @@ const BARS = [
 export default function CheckoutSuccess({ orderId, onEnd }: Props) {
   const items = useCartStore((s) => s.items)
   const item = items[0]
-  const timerRef = useRef<ReturnType<typeof setTimeout>>()
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const [date] = useState(() =>
     new Date().toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: '2-digit' })
   )

@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Slider as SliderPrimitive } from 'radix-ui'
 import { cn } from '@/lib/utils'
+import { Input } from '@/components/ui/input'
 
 interface Props {
   min: number
@@ -57,24 +58,26 @@ export default function ProductsPriceSlider({
       </SliderPrimitive.Root>
 
       <div className="flex items-center gap-2">
-        <input
+        <Input
           type="number"
           value={value[0]}
           min={min}
           max={value[1]}
           onChange={handleMinInput}
+          onWheel={(e) => e.currentTarget.blur()}
           aria-label="Precio mínimo"
-          className="w-20 bg-surface border border-border text-text-primary text-xs px-2 py-1 text-center focus:outline-none focus:border-accent"
+          className="w-20 rounded-none border-border bg-surface text-text-primary text-xs px-2 py-1 h-auto text-center focus-visible:ring-0 focus-visible:border-accent"
         />
         <span className="text-text-muted text-xs flex-1 text-center">—</span>
-        <input
+        <Input
           type="number"
           value={value[1]}
           min={value[0]}
           max={max}
           onChange={handleMaxInput}
+          onWheel={(e) => e.currentTarget.blur()}
           aria-label="Precio máximo"
-          className="w-20 bg-surface border border-border text-text-primary text-xs px-2 py-1 text-center focus:outline-none focus:border-accent"
+          className="w-20 rounded-none border-border bg-surface text-text-primary text-xs px-2 py-1 h-auto text-center focus-visible:ring-0 focus-visible:border-accent"
         />
       </div>
 

@@ -35,15 +35,14 @@ export default function DropsGrid({ collections, limit }: Props) {
                 to={`/colecciones/${col.slug}`}
                 className="group block relative overflow-hidden aspect-[4/5] bg-surface border border-border"
               >
-                {col.cover_url ? (
-                  <img
-                    src={`${col.cover_url}?width=800&quality=80`}
-                    alt={col.name}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="absolute inset-0 bg-surface" />
-                )}
+                <img
+                  src={col.cover_url
+                    ? `${col.cover_url}?width=800&quality=80`
+                    : 'https://icfqhtiujsboyrggxpqu.supabase.co/storage/v1/object/public/product-images/sunriseforever-woman-8782450_1920.jpg?width=800&quality=80'
+                  }
+                  alt={col.name}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
                 <div className="absolute bottom-6 left-6">
                   <p className="text-text-muted text-xs tracking-widest uppercase mb-1">Colección</p>

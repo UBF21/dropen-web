@@ -11,6 +11,7 @@ interface SiteSettings {
   wholesale_max_units: string
   whatsapp_number: string
   site_name: string
+  low_stock_threshold: string
 }
 
 export default function AdminSettingsPage() {
@@ -21,6 +22,7 @@ export default function AdminSettingsPage() {
     wholesale_max_units: '60',
     whatsapp_number: '51991941252',
     site_name: 'DROPEN',
+    low_stock_threshold: '3',
   })
   const [saving, setSaving] = useState(false)
 
@@ -55,6 +57,7 @@ export default function AdminSettingsPage() {
     { key: 'whatsapp_number', label: 'Número WhatsApp', type: 'tel' },
     { key: 'wholesale_min_units', label: 'Mínimo unidades wholesale', type: 'number' },
     { key: 'wholesale_max_units', label: 'Máximo unidades wholesale', type: 'number' },
+    { key: 'low_stock_threshold', label: 'Umbral de bajo stock (unidades)', type: 'number' },
   ]
 
   return (

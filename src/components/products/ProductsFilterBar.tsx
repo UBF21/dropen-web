@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { SlidersHorizontal, X } from 'lucide-react'
+import { SlidersHorizontal, X, ChevronDown, Check } from 'lucide-react'
 import type { CatalogFilters } from '@/hooks/useProductsCatalog'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 
 interface Props {
   filters: CatalogFilters
@@ -32,6 +34,9 @@ export default function ProductsFilterBar({
   onClear,
   onOpenFilters,
 }: Props) {
+  const [sortOpen, setSortOpen] = useState(false)
+  const currentSortLabel = SORT_OPTIONS.find((o) => o.value === filters.orden)?.label ?? 'Ordenar'
+
   const hasActiveFilters =
     filters.tallas.length > 0 ||
     filters.colores.length > 0 ||
@@ -51,20 +56,44 @@ export default function ProductsFilterBar({
             Filtros
           </button>
 
-          <select
-            value={filters.orden}
-            aria-label="Ordenar por"
-            onChange={(e) =>
-              onFiltersChange({ orden: e.target.value as CatalogFilters['orden'] })
-            }
-            className="bg-transparent border border-border text-text-muted text-xs px-2 py-1.5 focus:outline-none focus:border-accent hover:border-text-muted transition-colors uppercase tracking-widest cursor-pointer"
-          >
-            {SORT_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value} className="bg-surface text-text-primary normal-case tracking-normal">
-                {o.label}
-              </option>
-            ))}
-          </select>
+          <Popover open={sortOpen} onOpenChange={setSortOpen}>
+            <PopoverTrigger asChild>
+              <button
+                aria-label="Ordenar por"
+                aria-expanded={sortOpen}
+                className="flex items-center gap-1.5 h-[30px] px-2 border border-border bg-transparent text-[11px] font-semibold uppercase tracking-[0.15em] text-text-muted hover:border-text-muted hover:text-text-primary focus-visible:outline-none focus-visible:border-accent transition-colors"
+              >
+                {currentSortLabel}
+                <ChevronDown
+                  className={`w-3 h-3 transition-transform duration-150 ${sortOpen ? 'rotate-180' : ''}`}
+                />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent
+              align="start"
+              sideOffset={6}
+              className="w-[190px] p-0 rounded-none border border-border bg-surface shadow-xl gap-0"
+            >
+              {SORT_OPTIONS.map((o) => {
+                const isSelected = filters.orden === o.value
+                return (
+                  <button
+                    key={o.value}
+                    onClick={() => {
+                      onFiltersChange({ orden: o.value as CatalogFilters['orden'] })
+                      setSortOpen(false)
+                    }}
+                    className={`w-full text-left flex items-center justify-between px-3 py-2.5 text-[11px] uppercase tracking-[0.1em] transition-colors hover:bg-background ${
+                      isSelected ? 'text-accent font-semibold' : 'text-text-muted'
+                    }`}
+                  >
+                    {o.label}
+                    {isSelected && <Check className="w-3 h-3 shrink-0" />}
+                  </button>
+                )
+              })}
+            </PopoverContent>
+          </Popover>
 
           <span className="ml-auto text-xs text-text-muted">
             {totalCount} {totalCount === 1 ? 'producto' : 'productos'}

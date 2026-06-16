@@ -1,10 +1,12 @@
 import { motion } from 'framer-motion'
 import type { ProductVariant } from '@/types'
+import { useLowStockThreshold } from '@/hooks/useSiteSettings'
 
 interface Props {
   variants: ProductVariant[]
   selectedVariantId: string | null
   onSelect: (variantId: string) => void
+  fullyAgotado?: boolean
 }
 
 const COLOR_HEX: Record<string, string> = {
@@ -18,7 +20,8 @@ function uniqueSorted(arr: string[]): string[] {
   return [...new Set(arr)].sort((a, b) => parseInt(a) - parseInt(b) || a.localeCompare(b))
 }
 
-export default function VariantSelector({ variants, selectedVariantId, onSelect }: Props) {
+export default function VariantSelector({ variants, selectedVariantId, onSelect, fullyAgotado = false }: Props) {
+  const lowStockThreshold = useLowStockThreshold()
   const selected = variants.find((v) => v.id === selectedVariantId)
   const sizes  = uniqueSorted(variants.map((v) => v.size))
   const colors = [...new Set(variants.map((v) => v.color))]
@@ -33,6 +36,18 @@ export default function VariantSelector({ variants, selectedVariantId, onSelect 
     // Si no hay combinación exacta, buscar primera variante con esa talla con stock
     const fallback = variants.find((v) => v.size === size && v.stock > 0)
     if (fallback) onSelect(fallback.id)
+  }
+
+  if (fullyAgotado) {
+    return (
+      <div className="py-6 border border-border flex items-center justify-center gap-3" aria-label="Producto agotado">
+        <span className="block h-4 w-px bg-border" aria-hidden="true" />
+        <span className="font-display font-bold text-sm tracking-[0.35em] uppercase text-text-muted">
+          Agotado
+        </span>
+        <span className="block h-4 w-px bg-border" aria-hidden="true" />
+      </div>
+    )
   }
 
   return (
@@ -96,8 +111,13 @@ export default function VariantSelector({ variants, selectedVariantId, onSelect 
         </div>
       </div>
 
-      {selected && selected.stock > 0 && selected.stock <= 3 && (
-        <p className="text-xs text-accent">Solo quedan {selected.stock} unidades</p>
+      {selected && selected.stock > 0 && selected.stock <= lowStockThreshold && (
+        <div className="h-8 bg-surface border border-border flex items-center gap-2.5 px-3">
+          <span className="block h-3.5 w-px bg-accent shrink-0" aria-hidden="true" />
+          <span className="text-accent text-[11px] font-semibold tracking-[0.2em] uppercase">
+            Últimas {selected.stock} unidades
+          </span>
+        </div>
       )}
     </div>
   )

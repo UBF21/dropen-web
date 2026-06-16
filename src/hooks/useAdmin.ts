@@ -4,10 +4,9 @@ import type { User } from '@supabase/supabase-js'
 import type { AdminRole } from '@/types'
 
 interface AdminProfile {
-  user_id: string
+  id: string
   role: AdminRole
-  display_name: string | null
-  avatar_url: string | null
+  full_name: string | null
 }
 
 interface UseAdminResult {
@@ -32,8 +31,8 @@ export function useAdmin(): UseAdminResult {
       if (session?.user) {
         const { data } = await supabase
           .from('admin_profiles')
-          .select('user_id, role, display_name, avatar_url')
-          .eq('user_id', session.user.id)
+          .select('id, role, full_name')
+          .eq('id', session.user.id)
           .single()
         if (mounted) setProfile(data ?? null)
       }
@@ -45,8 +44,8 @@ export function useAdmin(): UseAdminResult {
       if (session?.user) {
         const { data } = await supabase
           .from('admin_profiles')
-          .select('user_id, role, display_name, avatar_url')
-          .eq('user_id', session.user.id)
+          .select('id, role, full_name')
+          .eq('id', session.user.id)
           .single()
         if (mounted) setProfile(data ?? null)
       } else {

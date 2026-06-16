@@ -1,6 +1,7 @@
 import { Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import type { CartItem as CartItemType } from '@/types'
+import { useSiteCurrency } from '@/hooks/useSiteCurrency'
 
 interface Props {
   item: CartItemType
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export default function CartItem({ item, onRemove, onQtyChange }: Props) {
+  const currency = useSiteCurrency()
   return (
     <div className="flex gap-4 py-4 border-b border-border">
       <div className="w-16 h-20 flex-shrink-0 bg-surface overflow-hidden">
@@ -26,7 +28,7 @@ export default function CartItem({ item, onRemove, onQtyChange }: Props) {
       <div className="flex-1 min-w-0">
         <p className="font-body font-medium text-text-primary text-sm truncate">{item.productName}</p>
         <p className="text-text-muted text-xs mt-0.5">{item.size} / {item.color}</p>
-        <p className="text-accent text-sm font-medium mt-1">S/ {item.price.toFixed(2)}</p>
+        <p className="text-accent text-sm font-medium mt-1">{currency.formatShort(item.price)}</p>
         <div className="flex items-center gap-2 mt-2">
           <button
             onClick={() => onQtyChange(item.variantId, item.quantity - 1)}
