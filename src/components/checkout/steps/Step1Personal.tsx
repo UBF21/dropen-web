@@ -1,14 +1,14 @@
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { ChevronDown, Check } from 'lucide-react'
 import { useOrderStore } from '@/store/order.store'
 import { usePhonePrefixes } from '@/hooks/usePhonePrefixes'
 import {
   Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
 } from '@/components/ui/form'
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import type { DocType } from '@/types'
@@ -61,6 +61,7 @@ const FIELD_CLS = 'rounded-none border-border bg-surface text-text-primary focus
 
 export default function Step1Personal() {
   const phonePrefixes = usePhonePrefixes()
+  const [prefixOpen, setPrefixOpen] = useState(false)
   const { firstName, lastName, docType, docNumber, phonePrefix, phone, setPersonal, setStep } = useOrderStore()
 
   const form = useForm<FormValues>({
@@ -155,21 +156,39 @@ export default function Step1Personal() {
             <FormField control={form.control} name="phonePrefix" render={({ field }) => (
               <div className="flex-shrink-0 w-[140px]">
                 <FormControl>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className="rounded-none border-border bg-surface text-text-primary text-sm h-10 focus-visible:ring-0 focus-visible:border-accent border-r-0">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-none border-border bg-surface z-50 max-h-64">
-                      {phonePrefixes.map((p) => (
-                        <SelectItem
-                          key={p.code} value={p.code}
-                          className="rounded-none text-text-primary text-sm font-mono focus:bg-accent/10 focus:text-text-primary cursor-pointer"
-                        >
-                          {p.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Popover open={prefixOpen} onOpenChange={setPrefixOpen}>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className="flex items-center gap-1 h-10 w-full px-3 border border-border border-r-0 bg-surface text-sm text-text-primary hover:border-accent focus-visible:outline-none transition-colors font-mono"
+                      >
+                        <span className="flex-1 text-left truncate">{field.value}</span>
+                        <ChevronDown className={`w-3.5 h-3.5 text-text-muted flex-shrink-0 transition-transform ${prefixOpen ? 'rotate-180' : ''}`} />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      align="start"
+                      sideOffset={0}
+                      className="w-[220px] p-0 rounded-none border border-border bg-surface shadow-xl max-h-64 overflow-y-auto"
+                    >
+                      {phonePrefixes.map((p) => {
+                        const isSelected = field.value === p.code
+                        return (
+                          <button
+                            key={p.code}
+                            type="button"
+                            onClick={() => { field.onChange(p.code); setPrefixOpen(false) }}
+                            className={`w-full text-left flex items-center justify-between px-3 py-2.5 text-[11px] font-mono tracking-wide transition-colors hover:bg-background ${
+                              isSelected ? 'text-accent font-semibold' : 'text-text-muted'
+                            }`}
+                          >
+                            {p.label}
+                            {isSelected && <Check className="w-3 h-3 shrink-0" />}
+                          </button>
+                        )
+                      })}
+                    </PopoverContent>
+                  </Popover>
                 </FormControl>
                 <FormMessage className="text-[10px] mt-1">
                   {form.formState.errors.phonePrefix?.message}
