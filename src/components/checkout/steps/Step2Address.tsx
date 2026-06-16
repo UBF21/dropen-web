@@ -7,6 +7,7 @@ import { useOrderStore } from '@/store/order.store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { DEPARTMENTS, DISTRICTS_BY_DEPT } from '@/data/peru-geo'
 
 // ─── Pin dorado ────────────────────────────────────────────────────────────────
@@ -154,7 +155,8 @@ export default function Step2Address() {
               <ChevronDown className={`w-3.5 h-3.5 text-text-muted flex-shrink-0 transition-transform ${deptOpen ? 'rotate-180' : ''}`} />
             </button>
           </PopoverTrigger>
-          <PopoverContent align="start" sideOffset={0} className="w-[var(--radix-popover-trigger-width)] p-0 rounded-none border border-border bg-surface shadow-xl max-h-64 overflow-y-auto z-[1001]">
+          <PopoverContent align="start" sideOffset={0} className="w-[var(--radix-popover-trigger-width)] p-0 rounded-none border border-border bg-surface shadow-xl z-[1001]">
+            <ScrollArea className="max-h-64">
             {DEPARTMENTS.map((d) => {
               const isSelected = deptCode === d.code
               return (
@@ -171,6 +173,7 @@ export default function Step2Address() {
                 </button>
               )
             })}
+            </ScrollArea>
           </PopoverContent>
         </Popover>
       </Field>
@@ -190,7 +193,8 @@ export default function Step2Address() {
                 <ChevronDown className={`w-3.5 h-3.5 text-text-muted flex-shrink-0 transition-transform ${distOpen ? 'rotate-180' : ''}`} />
               </button>
             </PopoverTrigger>
-            <PopoverContent align="start" sideOffset={0} className="w-[var(--radix-popover-trigger-width)] p-0 rounded-none border border-border bg-surface shadow-xl max-h-64 overflow-y-auto z-[1001]">
+            <PopoverContent align="start" sideOffset={0} className="w-[var(--radix-popover-trigger-width)] p-0 rounded-none border border-border bg-surface shadow-xl z-[1001]">
+              <ScrollArea className="max-h-64">
               {districtList.map((d) => {
                 const isSelected = district === d
                 return (
@@ -207,6 +211,7 @@ export default function Step2Address() {
                   </button>
                 )
               })}
+              </ScrollArea>
             </PopoverContent>
           </Popover>
         </Field>

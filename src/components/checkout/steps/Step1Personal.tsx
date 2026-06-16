@@ -9,6 +9,7 @@ import {
   Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
 } from '@/components/ui/form'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import type { DocType } from '@/types'
@@ -169,8 +170,9 @@ export default function Step1Personal() {
                     <PopoverContent
                       align="start"
                       sideOffset={0}
-                      className="w-[220px] p-0 rounded-none border border-border bg-surface shadow-xl max-h-64 overflow-y-auto"
+                      className="w-[220px] p-0 rounded-none border border-border bg-surface shadow-xl"
                     >
+                      <ScrollArea className="max-h-64">
                       {phonePrefixes.map((p) => {
                         const isSelected = field.value === p.code
                         return (
@@ -187,6 +189,7 @@ export default function Step1Personal() {
                           </button>
                         )
                       })}
+                      </ScrollArea>
                     </PopoverContent>
                   </Popover>
                 </FormControl>
