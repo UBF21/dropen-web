@@ -2,17 +2,11 @@ import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-leaflet'
 import { useEffect, useState } from 'react'
-import { MapPin, CheckCircle2 } from 'lucide-react'
+import { MapPin, CheckCircle2, ChevronDown, Check } from 'lucide-react'
 import { useOrderStore } from '@/store/order.store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { DEPARTMENTS, DISTRICTS_BY_DEPT } from '@/data/peru-geo'
 
 // ─── Pin dorado ────────────────────────────────────────────────────────────────
@@ -83,8 +77,10 @@ export default function Step2Address() {
   const [pin, setPin] = useState<{ lat: number; lng: number } | null>(
     savedLat !== null ? { lat: savedLat!, lng: savedLng! } : null
   )
-  const [flyToPin, setFlyToPin] = useState(false)
-  const [error,    setError]    = useState('')
+  const [flyToPin,    setFlyToPin]    = useState(false)
+  const [error,       setError]       = useState('')
+  const [deptOpen,    setDeptOpen]    = useState(false)
+  const [distOpen,    setDistOpen]    = useState(false)
 
   const selectedDept = DEPARTMENTS.find((d) => d.code === deptCode)
   const districtList = deptCode ? [...(DISTRICTS_BY_DEPT[deptCode] ?? [])].sort() : []
@@ -146,41 +142,73 @@ export default function Step2Address() {
 
       {/* Departamento */}
       <Field label="Departamento">
-        <Select value={deptCode || undefined} onValueChange={handleDeptChange}>
-          <SelectTrigger className={FIELD_CLS}>
-            <SelectValue placeholder="Seleccionar departamento…" />
-          </SelectTrigger>
-          <SelectContent className="rounded-none border-border bg-surface z-[1001] max-h-64">
-            {DEPARTMENTS.map((d) => (
-              <SelectItem
-                key={d.code} value={d.code}
-                className="rounded-none text-text-primary text-sm focus:bg-accent/10 focus:text-text-primary cursor-pointer"
-              >
-                {d.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Popover open={deptOpen} onOpenChange={setDeptOpen}>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className={`${FIELD_CLS} flex items-center gap-1 px-3`}
+            >
+              <span className="flex-1 text-left truncate text-sm">
+                {deptCode ? DEPARTMENTS.find((d) => d.code === deptCode)?.name : <span className="text-text-muted">Seleccionar departamento…</span>}
+              </span>
+              <ChevronDown className={`w-3.5 h-3.5 text-text-muted flex-shrink-0 transition-transform ${deptOpen ? 'rotate-180' : ''}`} />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent align="start" sideOffset={0} className="w-[var(--radix-popover-trigger-width)] p-0 rounded-none border border-border bg-surface shadow-xl max-h-64 overflow-y-auto z-[1001]">
+            {DEPARTMENTS.map((d) => {
+              const isSelected = deptCode === d.code
+              return (
+                <button
+                  key={d.code}
+                  type="button"
+                  onClick={() => { handleDeptChange(d.code); setDeptOpen(false) }}
+                  className={`w-full text-left flex items-center justify-between px-3 py-2.5 text-[11px] uppercase tracking-wide transition-colors hover:bg-background ${
+                    isSelected ? 'text-accent font-semibold' : 'text-text-muted'
+                  }`}
+                >
+                  {d.name}
+                  {isSelected && <Check className="w-3 h-3 shrink-0" />}
+                </button>
+              )
+            })}
+          </PopoverContent>
+        </Popover>
       </Field>
 
       {/* Distrito */}
       {deptCode && (
         <Field label="Distrito">
-          <Select value={district || undefined} onValueChange={handleDistrictChange}>
-            <SelectTrigger className={FIELD_CLS}>
-              <SelectValue placeholder="Seleccionar distrito…" />
-            </SelectTrigger>
-            <SelectContent className="rounded-none border-border bg-surface z-[1001] max-h-64">
-              {districtList.map((d) => (
-                <SelectItem
-                  key={d} value={d}
-                  className="rounded-none text-text-primary text-sm focus:bg-accent/10 focus:text-text-primary cursor-pointer"
-                >
-                  {d}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Popover open={distOpen} onOpenChange={setDistOpen}>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                className={`${FIELD_CLS} flex items-center gap-1 px-3`}
+              >
+                <span className="flex-1 text-left truncate text-sm">
+                  {district || <span className="text-text-muted">Seleccionar distrito…</span>}
+                </span>
+                <ChevronDown className={`w-3.5 h-3.5 text-text-muted flex-shrink-0 transition-transform ${distOpen ? 'rotate-180' : ''}`} />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="start" sideOffset={0} className="w-[var(--radix-popover-trigger-width)] p-0 rounded-none border border-border bg-surface shadow-xl max-h-64 overflow-y-auto z-[1001]">
+              {districtList.map((d) => {
+                const isSelected = district === d
+                return (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => { handleDistrictChange(d); setDistOpen(false) }}
+                    className={`w-full text-left flex items-center justify-between px-3 py-2.5 text-[11px] uppercase tracking-wide transition-colors hover:bg-background ${
+                      isSelected ? 'text-accent font-semibold' : 'text-text-muted'
+                    }`}
+                  >
+                    {d}
+                    {isSelected && <Check className="w-3 h-3 shrink-0" />}
+                  </button>
+                )
+              })}
+            </PopoverContent>
+          </Popover>
         </Field>
       )}
 
