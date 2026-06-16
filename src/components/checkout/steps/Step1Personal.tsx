@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useOrderStore } from '@/store/order.store'
+import { usePhonePrefixes } from '@/hooks/usePhonePrefixes'
 import {
   Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
 } from '@/components/ui/form'
@@ -21,23 +22,6 @@ const DOC_PLACEHOLDERS: Record<DocType, string> = {
   CE: '9 dígitos',
   Pasaporte: '9–12 caracteres',
 }
-
-const PHONE_PREFIXES = [
-  { code: '+51',  label: '+51 · Perú'              },
-  { code: '+1',   label: '+1  · EE.UU. / Canadá'   },
-  { code: '+52',  label: '+52 · México'             },
-  { code: '+54',  label: '+54 · Argentina'          },
-  { code: '+55',  label: '+55 · Brasil'             },
-  { code: '+56',  label: '+56 · Chile'              },
-  { code: '+57',  label: '+57 · Colombia'           },
-  { code: '+58',  label: '+58 · Venezuela'          },
-  { code: '+34',  label: '+34 · España'             },
-  { code: '+591', label: '+591 · Bolivia'           },
-  { code: '+593', label: '+593 · Ecuador'           },
-  { code: '+595', label: '+595 · Paraguay'          },
-  { code: '+598', label: '+598 · Uruguay'           },
-  { code: '+44',  label: '+44 · Reino Unido'        },
-]
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
@@ -76,6 +60,7 @@ const FIELD_CLS = 'rounded-none border-border bg-surface text-text-primary focus
 // ─── Componente ───────────────────────────────────────────────────────────────
 
 export default function Step1Personal() {
+  const phonePrefixes = usePhonePrefixes()
   const { firstName, lastName, docType, docNumber, phonePrefix, phone, setPersonal, setStep } = useOrderStore()
 
   const form = useForm<FormValues>({
@@ -175,7 +160,7 @@ export default function Step1Personal() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="rounded-none border-border bg-surface z-50 max-h-64">
-                      {PHONE_PREFIXES.map((p) => (
+                      {phonePrefixes.map((p) => (
                         <SelectItem
                           key={p.code} value={p.code}
                           className="rounded-none text-text-primary text-sm font-mono focus:bg-accent/10 focus:text-text-primary cursor-pointer"
