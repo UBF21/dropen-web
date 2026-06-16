@@ -2,9 +2,17 @@ import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-leaflet'
 import { useEffect, useRef, useState } from 'react'
-import { MapPin, ChevronDown, CheckCircle2 } from 'lucide-react'
+import { MapPin, CheckCircle2 } from 'lucide-react'
 import { useOrderStore } from '@/store/order.store'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { DEPARTMENTS, DISTRICTS_BY_DEPT } from '@/data/peru-geo'
 
 // ─── Pin dorado ────────────────────────────────────────────────────────────────
@@ -26,7 +34,7 @@ function MapController({ deptLat, deptLng, pinLat, pinLng, firstPin }: {
   pinLat: number | null; pinLng: number | null
   firstPin: boolean
 }) {
-  const map = useMap()
+  const map     = useMap()
   const prevDept = useRef('')
 
   useEffect(() => {
@@ -53,6 +61,12 @@ function findDeptCode(name: string) {
   return DEPARTMENTS.find((d) => d.name === name)?.code ?? ''
 }
 
+// Clases compartidas para que Select e Input sean visualmente idénticos
+const FIELD_CLS =
+  'h-10 w-full rounded-none border-border bg-surface text-sm ' +
+  'text-text-primary placeholder:text-text-muted ' +
+  'focus-visible:ring-0 focus-visible:border-accent focus:outline-none'
+
 // ─── Componente principal ──────────────────────────────────────────────────────
 
 export default function Step2Address() {
@@ -62,14 +76,14 @@ export default function Step2Address() {
     setAddress, setStep,
   } = useOrderStore()
 
-  const [deptCode,  setDeptCode]  = useState(() => findDeptCode(savedDept))
-  const [district,  setDistrict]  = useState(savedDistrict)
-  const [street,    setStreet]    = useState(savedAddress)
+  const [deptCode, setDeptCode] = useState(() => findDeptCode(savedDept))
+  const [district, setDistrict] = useState(savedDistrict)
+  const [street,   setStreet]   = useState(savedAddress)
   const [pin, setPin] = useState<{ lat: number; lng: number } | null>(
     savedLat !== null ? { lat: savedLat!, lng: savedLng! } : null
   )
-  const [firstPin, setFirstPin]   = useState(false)
-  const [error, setError]         = useState('')
+  const [firstPin, setFirstPin] = useState(false)
+  const [error,    setError]    = useState('')
 
   const selectedDept = DEPARTMENTS.find((d) => d.code === deptCode)
   const districtList = deptCode ? [...(DISTRICTS_BY_DEPT[deptCode] ?? [])].sort() : []
@@ -92,7 +106,7 @@ export default function Step2Address() {
   // ── Pin ───────────────────────────────────────────────────────────────────
 
   function handleMapPlace(lat: number, lng: number) {
-    setFirstPin(pin === null) // primera vez → vuela al punto
+    setFirstPin(pin === null)
     setPin({ lat, lng })
     setError('')
   }
@@ -104,10 +118,10 @@ export default function Step2Address() {
   // ── Continuar ─────────────────────────────────────────────────────────────
 
   function handleContinue() {
-    if (!deptCode)         { setError('Seleccioná un departamento'); return }
-    if (!district)         { setError('Seleccioná un distrito'); return }
-    if (!street.trim())    { setError('Ingresá tu dirección'); return }
-    if (!pin)              { setError('Marcá tu ubicación en el mapa'); return }
+    if (!deptCode)      { setError('Seleccioná un departamento'); return }
+    if (!district)      { setError('Seleccioná un distrito'); return }
+    if (!street.trim()) { setError('Ingresá tu dirección'); return }
+    if (!pin)           { setError('Marcá tu ubicación en el mapa'); return }
 
     setAddress({
       address:    street.trim(),
@@ -121,40 +135,60 @@ export default function Step2Address() {
     setStep(3)
   }
 
-  // ─── Render ────────────────────────────────────────────────────────────────
+  // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
     <div className="flex flex-col gap-5">
 
       {/* Departamento */}
       <Field label="Departamento">
-        <SelectBox value={deptCode} onChange={handleDeptChange} placeholder="Seleccionar departamento…">
-          {DEPARTMENTS.map((d) => (
-            <option key={d.code} value={d.code}>{d.name}</option>
-          ))}
-        </SelectBox>
+        <Select value={deptCode || undefined} onValueChange={handleDeptChange}>
+          <SelectTrigger className={FIELD_CLS}>
+            <SelectValue placeholder="Seleccionar departamento…" />
+          </SelectTrigger>
+          <SelectContent className="rounded-none border-border bg-surface z-[1001] max-h-64">
+            {DEPARTMENTS.map((d) => (
+              <SelectItem
+                key={d.code} value={d.code}
+                className="rounded-none text-text-primary text-sm focus:bg-accent/10 focus:text-text-primary cursor-pointer"
+              >
+                {d.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </Field>
 
       {/* Distrito */}
       {deptCode && (
         <Field label="Distrito">
-          <SelectBox value={district} onChange={handleDistrictChange} placeholder="Seleccionar distrito…">
-            {districtList.map((d) => (
-              <option key={d} value={d}>{d}</option>
-            ))}
-          </SelectBox>
+          <Select value={district || undefined} onValueChange={handleDistrictChange}>
+            <SelectTrigger className={FIELD_CLS}>
+              <SelectValue placeholder="Seleccionar distrito…" />
+            </SelectTrigger>
+            <SelectContent className="rounded-none border-border bg-surface z-[1001] max-h-64">
+              {districtList.map((d) => (
+                <SelectItem
+                  key={d} value={d}
+                  className="rounded-none text-text-primary text-sm focus:bg-accent/10 focus:text-text-primary cursor-pointer"
+                >
+                  {d}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </Field>
       )}
 
-      {/* Dirección exacta — input libre, sin API */}
+      {/* Dirección exacta */}
       {district && (
         <Field label="Dirección" hint="calle, número, referencia">
-          <input
+          <Input
             value={street}
             onChange={(e) => { setStreet(e.target.value); setError('') }}
             placeholder={`Jr. Río Santa Fé 320, ${district}`}
             autoComplete="street-address"
-            className="w-full h-10 px-3 border border-border bg-surface text-text-primary text-sm focus:outline-none focus:border-accent"
+            className={FIELD_CLS}
           />
         </Field>
       )}
@@ -207,7 +241,7 @@ export default function Step2Address() {
         </Field>
       )}
 
-      {/* Confirmación */}
+      {/* Panel de confirmación */}
       {pin && street.trim() && (
         <div className="border border-border bg-surface p-3 flex flex-col gap-1.5">
           <div className="flex items-start gap-2">
@@ -244,7 +278,7 @@ export default function Step2Address() {
   )
 }
 
-// ─── UI helpers ────────────────────────────────────────────────────────────────
+// ─── UI helper ─────────────────────────────────────────────────────────────────
 
 function Field({ label, hint, children }: {
   label: string; hint?: string; children: React.ReactNode
@@ -256,25 +290,6 @@ function Field({ label, hint, children }: {
         {hint && <span className="normal-case tracking-normal opacity-50">({hint})</span>}
       </label>
       {children}
-    </div>
-  )
-}
-
-function SelectBox({ value, onChange, placeholder, children }: {
-  value: string; onChange: (v: string) => void
-  placeholder: string; children: React.ReactNode
-}) {
-  return (
-    <div className="relative">
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full h-10 px-3 pr-8 border border-border bg-surface text-text-primary text-sm focus:outline-none focus:border-accent appearance-none cursor-pointer"
-      >
-        <option value="">{placeholder}</option>
-        {children}
-      </select>
-      <ChevronDown className="absolute right-3 top-3 w-4 h-4 text-text-muted pointer-events-none" />
     </div>
   )
 }
