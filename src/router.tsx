@@ -25,8 +25,10 @@ const CatalogPage    = lazy(() => import('@/pages/CatalogPage'))
 const DropPage       = lazy(() => import('@/pages/DropPage'))
 const ProductsPage   = lazy(() => import('@/pages/ProductsPage'))
 const ProductPage    = lazy(() => import('@/pages/ProductPage'))
-const WholesalePage  = lazy(() => import('@/pages/WholesalePage'))
-const NotFoundPage   = lazy(() => import('@/pages/NotFoundPage'))
+const WholesalePage   = lazy(() => import('@/pages/WholesalePage'))
+const CheckoutPage    = lazy(() => import('@/pages/CheckoutPage'))
+const OrderDetailPage = lazy(() => import('@/pages/OrderDetailPage'))
+const NotFoundPage    = lazy(() => import('@/pages/NotFoundPage'))
 
 const AdminLoginPage        = lazy(() => import('@/pages/admin/AdminLoginPage'))
 const AdminDashboardPage    = lazy(() => import('@/pages/admin/AdminDashboardPage'))
@@ -48,6 +50,8 @@ export const router = createBrowserRouter([
       { path: 'productos',         element: withSuspense(ProductsPage) },
       { path: 'productos/:slug',   element: withSuspense(ProductPage) },
       { path: 'wholesale',         element: withSuspense(WholesalePage) },
+      { path: 'checkout',          element: withSuspense(CheckoutPage) },
+      { path: 'pedido/:id',        element: withSuspense(OrderDetailPage) },
       { path: '*',                 element: withSuspense(NotFoundPage) },
     ],
   },
