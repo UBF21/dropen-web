@@ -3,6 +3,7 @@ import { lazy, Suspense } from 'react'
 import Layout from '@/components/layout/Layout'
 import AdminGuard from '@/components/admin/AdminGuard'
 import AdminLayout from '@/components/admin/AdminLayout'
+import ErrorPage from '@/pages/ErrorPage'
 
 function Loading() {
   return (
@@ -43,6 +44,7 @@ export const router = createBrowserRouter([
   {
     path: '/',
     element: <Layout />,
+    errorElement: <ErrorPage />,
     children: [
       { index: true,               element: withSuspense(HomePage) },
       { path: 'colecciones',       element: withSuspense(CatalogPage) },
@@ -58,10 +60,12 @@ export const router = createBrowserRouter([
   {
     path: '/admin/login',
     element: withSuspense(AdminLoginPage),
+    errorElement: <ErrorPage />,
   },
   {
     path: '/admin',
     element: <AdminGuard><AdminLayout /></AdminGuard>,
+    errorElement: <ErrorPage />,
     children: [
       { index: true,           element: withSuspense(AdminDashboardPage) },
       { path: 'productos',     element: withSuspense(AdminProductsPage) },
