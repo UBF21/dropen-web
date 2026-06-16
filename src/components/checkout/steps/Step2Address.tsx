@@ -1,68 +1,105 @@
 import { useEffect, useRef, useState } from 'react'
-import { Loader } from '@googlemaps/js-api-loader'
 import { MapPin, Loader2 } from 'lucide-react'
 import { useOrderStore } from '@/store/order.store'
 import { Button } from '@/components/ui/button'
 
-const MAPS_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY ?? ''
+const GEOAPIFY_KEY = import.meta.env.VITE_GEOAPIFY_API_KEY ?? ''
 
-function extractComponent(
-  components: google.maps.GeocoderAddressComponent[],
-  type: string
-): string {
-  return components.find((c) => c.types.includes(type))?.long_name ?? ''
+interface GeoFeature {
+  properties: {
+    formatted: string
+    lat: number
+    lon: number
+    state?: string
+    county?: string
+    city?: string
+    suburb?: string
+  }
+}
+
+interface Selected {
+  address: string
+  lat: number | null
+  lng: number | null
+  department: string
+  province: string
+  district: string
 }
 
 export default function Step2Address() {
   const { address: savedAddress, setAddress, setStep } = useOrderStore()
-  const inputRef = useRef<HTMLInputElement>(null)
-  const [mapsReady, setMapsReady] = useState(false)
-  const [mapsError, setMapsError] = useState(false)
-  const [selected, setSelected] = useState({
+  const [query, setQuery] = useState(savedAddress)
+  const [suggestions, setSuggestions] = useState<GeoFeature[]>([])
+  const [loading, setLoading] = useState(false)
+  const [selected, setSelected] = useState<Selected>({
     address: savedAddress,
-    lat: null as number | null,
-    lng: null as number | null,
+    lat: savedAddress ? 0 : null,
+    lng: savedAddress ? 0 : null,
     department: '',
     province: '',
     district: '',
   })
   const [error, setError] = useState('')
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
-    if (!MAPS_KEY) { setMapsError(true); return }
-    const loader = new Loader({ apiKey: MAPS_KEY, version: 'weekly', libraries: ['places'] })
-    loader.load().then(() => setMapsReady(true)).catch(() => setMapsError(true))
-  }, [])
+    if (debounceRef.current) clearTimeout(debounceRef.current)
 
-  useEffect(() => {
-    if (!mapsReady || !inputRef.current) return
+    if (!query || query.length < 3) {
+      setSuggestions([])
+      return
+    }
 
-    const ac = new google.maps.places.Autocomplete(inputRef.current, {
-      componentRestrictions: { country: 'pe' },
-      fields: ['formatted_address', 'geometry', 'address_components'],
-      types: ['address'],
+    debounceRef.current = setTimeout(async () => {
+      setLoading(true)
+      try {
+        const params = new URLSearchParams({
+          text: query,
+          'filter[countrycode]': 'pe',
+          apiKey: GEOAPIFY_KEY,
+          limit: '5',
+          lang: 'es',
+        })
+        const res = await fetch(
+          `https://api.geoapify.com/v1/geocode/autocomplete?${params}`
+        )
+        const data = await res.json()
+        setSuggestions(data.features ?? [])
+      } catch {
+        setSuggestions([])
+      } finally {
+        setLoading(false)
+      }
+    }, 300)
+  }, [query])
+
+  function handleSelect(feature: GeoFeature) {
+    const p = feature.properties
+    setSelected({
+      address: p.formatted,
+      lat: p.lat,
+      lng: p.lon,
+      department: p.state ?? '',
+      province: p.county ?? '',
+      district: p.city ?? p.suburb ?? '',
     })
-
-    ac.addListener('place_changed', () => {
-      const place = ac.getPlace()
-      if (!place.geometry?.location || !place.address_components) return
-      const comps = place.address_components
-      setSelected({
-        address: place.formatted_address ?? '',
-        lat: place.geometry.location.lat(),
-        lng: place.geometry.location.lng(),
-        department: extractComponent(comps, 'administrative_area_level_1'),
-        province:   extractComponent(comps, 'administrative_area_level_2'),
-        district:   extractComponent(comps, 'locality') || extractComponent(comps, 'administrative_area_level_3'),
-      })
-      setError('')
-    })
-  }, [mapsReady])
+    setQuery(p.formatted)
+    setSuggestions([])
+    setError('')
+  }
 
   function handleContinue() {
     if (!selected.address) { setError('Seleccioná una dirección del listado'); return }
-    if (selected.lat === null) { setError('Seleccioná una dirección de las sugerencias de Google Maps'); return }
-    setAddress({ ...selected, country: 'PE' })
+    if (selected.lat === null) { setError('Seleccioná una dirección de las sugerencias'); return }
+    setAddress({
+      address: selected.address,
+      lat: selected.lat,
+      lng: selected.lng,
+      department: selected.department,
+      province: selected.province,
+      district: selected.district,
+      country: 'PE',
+    })
     setStep(3)
   }
 
@@ -73,27 +110,34 @@ export default function Step2Address() {
           Dirección de entrega
         </label>
 
-        {mapsError ? (
+        <div className="relative">
           <input
-            defaultValue={savedAddress}
-            onChange={(e) => setSelected((s) => ({ ...s, address: e.target.value }))}
-            placeholder="Av. Javier Prado 1520, Miraflores, Lima"
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value)
+              setSelected((s) => ({ ...s, lat: null }))
+            }}
+            placeholder="Buscar dirección en Perú..."
             className="w-full h-10 px-3 border border-border bg-surface text-text-primary text-sm focus:outline-none focus:border-accent"
           />
-        ) : (
-          <div className="relative">
-            <input
-              ref={inputRef}
-              defaultValue={savedAddress}
-              placeholder={mapsReady ? 'Buscar dirección en Perú...' : 'Cargando Maps...'}
-              disabled={!mapsReady}
-              className="w-full h-10 px-3 border border-border bg-surface text-text-primary text-sm focus:outline-none focus:border-accent disabled:opacity-50"
-            />
-            {!mapsReady && !mapsError && (
-              <Loader2 className="absolute right-3 top-3 w-4 h-4 animate-spin text-text-muted" />
-            )}
-          </div>
-        )}
+          {loading && (
+            <Loader2 className="absolute right-3 top-3 w-4 h-4 animate-spin text-text-muted" />
+          )}
+
+          {suggestions.length > 0 && (
+            <ul className="absolute z-50 top-full left-0 right-0 border border-border bg-surface shadow-md">
+              {suggestions.map((f, i) => (
+                <li
+                  key={i}
+                  onClick={() => handleSelect(f)}
+                  className="px-3 py-2 text-[12px] text-text-primary hover:bg-accent/10 cursor-pointer border-b border-border last:border-b-0"
+                >
+                  {f.properties.formatted}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
         {error && <p className="text-[10px] text-destructive">{error}</p>}
       </div>
