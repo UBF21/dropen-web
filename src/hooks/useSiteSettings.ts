@@ -8,17 +8,14 @@ let pending: Promise<Settings> | null = null
 
 function fetchSettings(): Promise<Settings> {
   if (!pending) {
-    pending = supabase
-      .from('site_settings')
-      .select('key, value')
-      .then(({ data }) => {
-        cached = Object.fromEntries(
-          (data ?? []).map(({ key, value }: { key: string; value: string }) => [key, value])
-        )
-        return cached
-      })
+    pending = Promise.resolve(supabase.from('site_settings').select('key, value')).then(({ data }) => {
+      cached = Object.fromEntries(
+        (data ?? []).map(({ key, value }: { key: string; value: string }) => [key, value])
+      )
+      return cached!
+    })
   }
-  return pending
+  return pending!
 }
 
 export function useSiteSettings(): Settings {
