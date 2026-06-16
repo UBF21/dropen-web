@@ -29,23 +29,24 @@ const PIN_ICON = L.divIcon({
 
 // ─── Sub-componentes del mapa ──────────────────────────────────────────────────
 
-function MapController({ deptLat, deptLng, pinLat, pinLng, firstPin }: {
+function MapController({ deptLat, deptLng, pinLat, pinLng, flyToPin }: {
   deptLat: number; deptLng: number
   pinLat: number | null; pinLng: number | null
-  firstPin: boolean
+  flyToPin: boolean
 }) {
-  const map     = useMap()
-  const prevDept = useRef('')
+  const map = useMap()
 
+  // Re-centra cuando cambia el departamento
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { map.setView([deptLat, deptLng], 11) }, [deptLat, deptLng])
+
+  // Vuela al pin solo cuando el usuario lo coloca con click (no en drag)
   useEffect(() => {
-    const deptKey = `${deptLat},${deptLng}`
-    if (firstPin && pinLat !== null && pinLng !== null) {
+    if (flyToPin && pinLat !== null && pinLng !== null) {
       map.flyTo([pinLat, pinLng], 16, { duration: 0.8 })
-    } else if (deptKey !== prevDept.current) {
-      map.setView([deptLat, deptLng], 11)
-      prevDept.current = deptKey
     }
-  })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flyToPin, pinLat, pinLng])
 
   return null
 }
@@ -82,7 +83,7 @@ export default function Step2Address() {
   const [pin, setPin] = useState<{ lat: number; lng: number } | null>(
     savedLat !== null ? { lat: savedLat!, lng: savedLng! } : null
   )
-  const [firstPin, setFirstPin] = useState(false)
+  const [flyToPin, setFlyToPin] = useState(false)
   const [error,    setError]    = useState('')
 
   const selectedDept = DEPARTMENTS.find((d) => d.code === deptCode)
@@ -94,25 +95,28 @@ export default function Step2Address() {
     setDeptCode(code)
     setDistrict('')
     setPin(null)
+    setFlyToPin(false)
     setError('')
   }
 
   function handleDistrictChange(value: string) {
     setDistrict(value)
     setPin(null)
+    setFlyToPin(false)
     setError('')
   }
 
   // ── Pin ───────────────────────────────────────────────────────────────────
 
   function handleMapPlace(lat: number, lng: number) {
-    setFirstPin(pin === null)
     setPin({ lat, lng })
+    setFlyToPin(true)   // click → vuela al pin
     setError('')
   }
 
   function handlePinDrag(lat: number, lng: number) {
     setPin({ lat, lng })
+    setFlyToPin(false)  // drag → ya está viendo el punto, no volar
   }
 
   // ── Continuar ─────────────────────────────────────────────────────────────
@@ -213,7 +217,7 @@ export default function Step2Address() {
                 deptLng={selectedDept.lng}
                 pinLat={pin?.lat ?? null}
                 pinLng={pin?.lng ?? null}
-                firstPin={firstPin}
+                flyToPin={flyToPin}
               />
               <MapClickHandler onPlace={handleMapPlace} />
               {pin && (
