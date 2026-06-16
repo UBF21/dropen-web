@@ -37,12 +37,13 @@ interface OrderMessageParams {
   docNumber: string
   firstName: string
   lastName: string
+  phone: string
   orderId: string
   reference: string
 }
 
 export function buildOrderWhatsAppMessage(params: OrderMessageParams): string {
-  const { docNumber, firstName, lastName, orderId } = params
+  const { docNumber, firstName, lastName, phone, orderId } = params
   const baseUrl = window.location.origin
-  return `${docNumber} - ${firstName} ${lastName}\n${baseUrl}/pedido/${orderId}`
+  return `${docNumber} - ${firstName} ${lastName}\n📱 ${phone}\n${baseUrl}/pedido/${orderId}`
 }

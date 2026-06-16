@@ -143,6 +143,7 @@ export interface Order {
   last_name: string
   doc_type: DocType
   doc_number: string
+  phone: string
   address: string
   lat: number | null
   lng: number | null
@@ -165,6 +166,7 @@ export interface CreateOrderInput {
   last_name: string
   doc_type: DocType
   doc_number: string
+  phone: string
   address: string
   lat: number | null
   lng: number | null

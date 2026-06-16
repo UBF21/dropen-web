@@ -92,6 +92,7 @@ export default function OrderDetailPage() {
   const waMessage = buildOrderWhatsAppMessage({
     docType: order.doc_type, docNumber: order.doc_number,
     firstName: order.first_name, lastName: order.last_name,
+    phone: order.phone,
     orderId: order.id, reference: order.reference,
   })
   const waUrl = buildWhatsAppUrl(WA_NUMBER, waMessage)
@@ -149,6 +150,10 @@ export default function OrderDetailPage() {
             <div>
               <p className="text-[7px] text-[#444] tracking-[3px] uppercase mb-1">{order.doc_type}</p>
               <p className="text-[11px] text-[#999] font-mono">{order.doc_number}</p>
+            </div>
+            <div className="col-span-2">
+              <p className="text-[7px] text-[#444] tracking-[3px] uppercase mb-1">Teléfono</p>
+              <p className="text-[11px] text-[#999] font-mono">{order.phone || '—'}</p>
             </div>
             <div>
               <p className="text-[7px] text-[#444] tracking-[3px] uppercase mb-1">Talla / Color</p>

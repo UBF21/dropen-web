@@ -8,6 +8,8 @@ interface OrderStore {
   lastName: string
   docType: DocType
   docNumber: string
+  phonePrefix: string
+  phone: string
   // Paso 2
   address: string
   lat: number | null
@@ -22,7 +24,7 @@ interface OrderStore {
   orderId: string | null
 
   setStep: (step: 1 | 2 | 3) => void
-  setPersonal: (data: { firstName: string; lastName: string; docType: DocType; docNumber: string }) => void
+  setPersonal: (data: { firstName: string; lastName: string; docType: DocType; docNumber: string; phonePrefix: string; phone: string }) => void
   setAddress: (data: {
     address: string
     lat: number | null
@@ -38,6 +40,7 @@ interface OrderStore {
 
 const INITIAL_STATE = {
   firstName: '', lastName: '', docType: 'DNI' as DocType, docNumber: '',
+  phonePrefix: '+51', phone: '',
   address: '', lat: null, lng: null, department: '', province: '', district: '', country: 'PE',
   step: 1 as const, orderId: null,
 }

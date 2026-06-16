@@ -37,6 +37,7 @@ export default function Step3Confirm({ onSuccess }: Props) {
       last_name:       store.lastName,
       doc_type:        store.docType,
       doc_number:      store.docNumber,
+      phone:           store.phonePrefix + store.phone,
       address:         store.address,
       lat:             store.lat,
       lng:             store.lng,
@@ -105,6 +106,10 @@ export default function Step3Confirm({ onSuccess }: Props) {
           <div>
             <p className="text-[9px] uppercase tracking-[2px] text-text-muted mb-0.5">{store.docType}</p>
             <p className="text-text-primary font-mono">{store.docNumber}</p>
+          </div>
+          <div className="col-span-2">
+            <p className="text-[9px] uppercase tracking-[2px] text-text-muted mb-0.5">Teléfono</p>
+            <p className="text-text-primary font-mono">{store.phonePrefix} {store.phone}</p>
           </div>
         </div>
         <div className="flex items-start gap-2 text-[11px]">
