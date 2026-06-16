@@ -132,3 +132,48 @@ export interface WhatsAppLine {
   quantity: number
   price: number
 }
+
+export type DocType = 'DNI' | 'CE' | 'Pasaporte'
+export type OrderStatus = 'pending' | 'confirmed' | 'cancelled' | 'expired'
+
+export interface Order {
+  id: string
+  reference: string
+  first_name: string
+  last_name: string
+  doc_type: DocType
+  doc_number: string
+  address: string
+  lat: number | null
+  lng: number | null
+  department: string | null
+  province: string | null
+  district: string | null
+  country: string
+  items: CartItem[]
+  total: number
+  currency: string
+  status: OrderStatus
+  reservation_ids: string[]
+  created_at: string
+  updated_at: string
+}
+
+export interface CreateOrderInput {
+  reference: string
+  first_name: string
+  last_name: string
+  doc_type: DocType
+  doc_number: string
+  address: string
+  lat: number | null
+  lng: number | null
+  department: string | null
+  province: string | null
+  district: string | null
+  country: string
+  items: CartItem[]
+  total: number
+  currency: string
+  reservation_ids: string[]
+}
