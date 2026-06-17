@@ -13,6 +13,17 @@
     margin: 0;
   }
 
+  /* Scrollbar global */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #0a0a0a; }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(201, 169, 110, 0.25);
+    border-radius: 0;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(201, 169, 110, 0.55); }
+  ::-webkit-scrollbar-corner { background: #0a0a0a; }
+  * { scrollbar-width: thin; scrollbar-color: rgba(201, 169, 110, 0.25) #0a0a0a; }
+
   /* Ocultar spinners nativos en inputs numéricos globalmente */
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {
