@@ -21,19 +21,19 @@ export async function createReservations(
 
   try {
     for (const item of items) {
-      const { data, error } = await supabase
+      const id = crypto.randomUUID()
+      const { error } = await supabase
         .from('reservations')
         .insert({
+          id,
           variant_id: item.variantId,
           quantity: item.quantity,
           status: 'pending',
           expires_at: expiresAt,
         })
-        .select('id')
-        .single()
 
       if (error) throw error
-      reservationIds.push(data.id)
+      reservationIds.push(id)
     }
 
     const reference = `DRP-${reservationIds[0].substring(0, 8).toUpperCase()}`
