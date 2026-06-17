@@ -33,13 +33,15 @@ function CatalogProductCard({ product }: CatalogCardProps) {
           <img
             src={productImgSrc(product.primary_image_url)}
             alt={product.name}
-            className={`absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03] ${outOfStock ? 'grayscale' : ''}`}
+            className={`absolute inset-0 w-full h-full object-cover transition-transform duration-500 ${outOfStock ? 'grayscale' : 'group-hover:scale-[1.03]'}`}
           />
-          <div className="absolute inset-0 bg-background/50 backdrop-blur-[2px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-            <span className="text-text-primary text-xs tracking-[0.2em] uppercase font-medium">
-              Ver producto
-            </span>
-          </div>
+          {!outOfStock && (
+            <div className="absolute inset-0 bg-background/50 backdrop-blur-[2px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+              <span className="text-text-primary text-xs tracking-[0.2em] uppercase font-medium">
+                Ver producto
+              </span>
+            </div>
+          )}
           {lowStock && (
             <div className="absolute bottom-0 inset-x-0 z-10 h-8 bg-background/85 backdrop-blur-sm flex items-center gap-2.5 px-3">
               <span className="block h-3.5 w-px bg-accent shrink-0" aria-hidden="true" />

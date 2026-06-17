@@ -49,18 +49,20 @@ export default function ProductCard({ product, index = 0 }: Props) {
           <img
             src={productImgSrc(imageUrl)}
             alt={product.name}
-            className={`absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03] ${outOfStock ? 'grayscale' : ''}`}
+            className={`absolute inset-0 w-full h-full object-cover transition-transform duration-500 ${outOfStock ? 'grayscale' : 'group-hover:scale-[1.03]'}`}
           />
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileHover={{ opacity: 1 }}
-            transition={{ duration: 0.2 }}
-            className="absolute inset-0 bg-background/50 backdrop-blur-[2px] flex items-center justify-center pointer-events-none"
-          >
-            <span className="text-text-primary text-xs tracking-[0.2em] uppercase font-medium">
-              Ver producto
-            </span>
-          </motion.div>
+          {!outOfStock && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileHover={{ opacity: 1 }}
+              transition={{ duration: 0.2 }}
+              className="absolute inset-0 bg-background/50 backdrop-blur-[2px] flex items-center justify-center pointer-events-none"
+            >
+              <span className="text-text-primary text-xs tracking-[0.2em] uppercase font-medium">
+                Ver producto
+              </span>
+            </motion.div>
+          )}
           {lowStock && (
             <div className="absolute bottom-0 inset-x-0 z-10 h-8 bg-background/85 backdrop-blur-sm flex items-center gap-2.5 px-3">
               <span className="block h-3.5 w-px bg-accent shrink-0" aria-hidden="true" />
