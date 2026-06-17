@@ -44,3 +44,23 @@
 @media (prefers-reduced-motion: reduce) {
   .animate-marquee { animation-play-state: paused !important; }
 }
+
+@layer utilities {
+  .dropdown-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(201, 169, 110, 0.4) #111111;
+  }
+  .dropdown-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+  .dropdown-scroll::-webkit-scrollbar-track {
+    background: #111111;
+  }
+  .dropdown-scroll::-webkit-scrollbar-thumb {
+    background: rgba(201, 169, 110, 0.4);
+    border-radius: 0;
+  }
+  .dropdown-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(201, 169, 110, 0.7);
+  }
+}

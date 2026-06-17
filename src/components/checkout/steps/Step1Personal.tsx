@@ -171,7 +171,7 @@ export default function Step1Personal() {
                       sideOffset={0}
                       className="w-[220px] p-0 rounded-none border border-border bg-surface shadow-xl"
                     >
-                      <div className="max-h-60 overflow-y-auto">
+                      <div className="max-h-60 overflow-y-auto dropdown-scroll">
                       {phonePrefixes.map((p) => {
                         const isSelected = field.value === p.code
                         return (

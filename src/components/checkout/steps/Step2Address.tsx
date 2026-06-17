@@ -155,7 +155,7 @@ export default function Step2Address() {
             </button>
           </PopoverTrigger>
           <PopoverContent align="start" sideOffset={0} className="w-[var(--radix-popover-trigger-width)] p-0 rounded-none border border-border bg-surface shadow-xl z-[1001]">
-            <div className="max-h-60 overflow-y-auto">
+            <div className="max-h-60 overflow-y-auto dropdown-scroll">
             {DEPARTMENTS.map((d) => {
               const isSelected = deptCode === d.code
               return (
@@ -193,7 +193,7 @@ export default function Step2Address() {
               </button>
             </PopoverTrigger>
             <PopoverContent align="start" sideOffset={0} className="w-[var(--radix-popover-trigger-width)] p-0 rounded-none border border-border bg-surface shadow-xl z-[1001]">
-              <div className="max-h-60 overflow-y-auto">
+              <div className="max-h-60 overflow-y-auto dropdown-scroll">
               {districtList.map((d) => {
                 const isSelected = district === d
                 return (
