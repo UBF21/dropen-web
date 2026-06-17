@@ -7,7 +7,6 @@ import { useOrderStore } from '@/store/order.store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { DEPARTMENTS, DISTRICTS_BY_DEPT } from '@/data/peru-geo'
 
 // ─── Pin dorado ────────────────────────────────────────────────────────────────
@@ -156,7 +155,7 @@ export default function Step2Address() {
             </button>
           </PopoverTrigger>
           <PopoverContent align="start" sideOffset={0} className="w-[var(--radix-popover-trigger-width)] p-0 rounded-none border border-border bg-surface shadow-xl z-[1001]">
-            <ScrollArea className="max-h-64">
+            <div className="max-h-60 overflow-y-auto">
             {DEPARTMENTS.map((d) => {
               const isSelected = deptCode === d.code
               return (
@@ -173,7 +172,7 @@ export default function Step2Address() {
                 </button>
               )
             })}
-            </ScrollArea>
+            </div>
           </PopoverContent>
         </Popover>
       </Field>
@@ -194,7 +193,7 @@ export default function Step2Address() {
               </button>
             </PopoverTrigger>
             <PopoverContent align="start" sideOffset={0} className="w-[var(--radix-popover-trigger-width)] p-0 rounded-none border border-border bg-surface shadow-xl z-[1001]">
-              <ScrollArea className="max-h-64">
+              <div className="max-h-60 overflow-y-auto">
               {districtList.map((d) => {
                 const isSelected = district === d
                 return (
@@ -211,7 +210,7 @@ export default function Step2Address() {
                   </button>
                 )
               })}
-              </ScrollArea>
+              </div>
             </PopoverContent>
           </Popover>
         </Field>
